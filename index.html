@@ -2,976 +2,469 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pawkeeper — Dog Boarding Planner</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Pawkeeper — Dog Boarding</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --cream: #FAF7F2;
-    --warm-white: #FFFEF9;
-    --sand: #EDE8DF;
-    --tan: #D4C9B5;
-    --brown: #8B6F47;
-    --brown-dark: #5C4430;
-    --brown-light: #C4A882;
-    --accent: #C17F4A;
-    --accent-light: #F0DFC8;
-    --accent-dark: #8B5A2B;
-    --green: #5A7A5A;
-    --green-light: #D4E8D4;
-    --red: #A84444;
-    --red-light: #F0D4D4;
-    --blue: #4A6A8A;
-    --blue-light: #D4E4F0;
-    --text: #2C2016;
-    --text-mid: #6B5740;
-    --text-light: #9C8A78;
-    --border: #E0D8CC;
-    --radius: 12px;
-    --shadow: 0 2px 12px rgba(139,111,71,0.10);
-    --shadow-lg: 0 8px 32px rgba(139,111,71,0.15);
-  }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--cream);
-    color: var(--text);
-    min-height: 100vh;
-    font-size: 15px;
-  }
-
-  /* ---- AUTH SCREEN ---- */
-  #auth-screen {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--cream);
-    background-image: radial-gradient(circle at 20% 80%, rgba(193,127,74,0.08) 0%, transparent 50%),
-                      radial-gradient(circle at 80% 20%, rgba(90,122,90,0.06) 0%, transparent 50%);
-  }
-
-  .auth-card {
-    background: var(--warm-white);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 3rem 2.5rem;
-    width: 360px;
-    box-shadow: var(--shadow-lg);
-    text-align: center;
-  }
-
-  .auth-paw { font-size: 52px; margin-bottom: 1rem; }
-
-  .auth-card h1 {
-    font-family: 'DM Serif Display', serif;
-    font-size: 2rem;
-    color: var(--brown-dark);
-    margin-bottom: 0.25rem;
-  }
-
-  .auth-card p {
-    color: var(--text-light);
-    font-size: 14px;
-    margin-bottom: 2rem;
-  }
-
-  .auth-card input {
-    width: 100%;
-    padding: 0.75rem 1rem;
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 15px;
-    background: var(--cream);
-    color: var(--text);
-    transition: border-color 0.2s;
-    margin-bottom: 1rem;
-    letter-spacing: 0.1em;
-  }
-
-  .auth-card input:focus { outline: none; border-color: var(--accent); }
-
-  .auth-error {
-    color: var(--red);
-    font-size: 13px;
-    margin-bottom: 0.75rem;
-    display: none;
-  }
-
-  /* ---- BUTTONS ---- */
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 0.6rem 1.25rem;
-    border-radius: var(--radius);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    border: 1.5px solid transparent;
-    transition: all 0.15s;
-    text-decoration: none;
-  }
-
-  .btn-primary {
-    background: var(--accent);
-    color: #fff;
-    border-color: var(--accent);
-  }
-  .btn-primary:hover { background: var(--accent-dark); border-color: var(--accent-dark); }
-
-  .btn-outline {
-    background: transparent;
-    color: var(--text-mid);
-    border-color: var(--border);
-  }
-  .btn-outline:hover { background: var(--sand); }
-
-  .btn-danger {
-    background: transparent;
-    color: var(--red);
-    border-color: var(--red-light);
-  }
-  .btn-danger:hover { background: var(--red-light); }
-
-  .btn-full { width: 100%; justify-content: center; }
-
-  /* ---- APP LAYOUT ---- */
-  #app { display: none; min-height: 100vh; }
-
-  header {
-    background: var(--warm-white);
-    border-bottom: 1px solid var(--border);
-    padding: 0 2rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 64px;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    box-shadow: 0 1px 8px rgba(139,111,71,0.07);
-  }
-
-  .logo {
-    font-family: 'DM Serif Display', serif;
-    font-size: 1.4rem;
-    color: var(--brown-dark);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .logo span { font-size: 22px; }
-
-  nav { display: flex; gap: 4px; }
-
-  nav button {
-    background: none;
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--text-mid);
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-
-  nav button:hover { background: var(--sand); color: var(--text); }
-  nav button.active { background: var(--accent-light); color: var(--accent-dark); }
-
-  /* Public badge */
-  .public-badge {
-    font-size: 12px;
-    background: var(--green-light);
-    color: var(--green);
-    border-radius: 20px;
-    padding: 3px 10px;
-    font-weight: 600;
-  }
-
-  main { padding: 2rem; max-width: 1100px; margin: 0 auto; }
-
-  /* ---- VIEWS ---- */
-  .view { display: none; }
-  .view.active { display: block; }
-
-  /* ---- DASHBOARD ---- */
-  .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 1rem;
-    margin-bottom: 2rem;
-  }
-
-  .stat-card {
-    background: var(--warm-white);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 1.25rem 1.5rem;
-    box-shadow: var(--shadow);
-  }
-
-  .stat-label {
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--text-light);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    margin-bottom: 0.5rem;
-  }
-
-  .stat-value {
-    font-family: 'DM Serif Display', serif;
-    font-size: 2rem;
-    color: var(--brown-dark);
-    line-height: 1;
-  }
-
-  .stat-sub { font-size: 12px; color: var(--text-light); margin-top: 4px; }
-
-  /* ---- SECTION HEADERS ---- */
-  .section-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 1.25rem;
-  }
-
-  .section-title {
-    font-family: 'DM Serif Display', serif;
-    font-size: 1.4rem;
-    color: var(--brown-dark);
-  }
-
-  /* ---- BOOKING CARDS ---- */
-  .bookings-list { display: flex; flex-direction: column; gap: 0.75rem; }
-
-  .booking-card {
-    background: var(--warm-white);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 1rem 1.25rem;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    box-shadow: var(--shadow);
-    transition: box-shadow 0.15s;
-  }
-
-  .booking-card:hover { box-shadow: var(--shadow-lg); }
-
-  .booking-dog-avatar {
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    background: var(--accent-light);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 22px;
-    flex-shrink: 0;
-  }
-
-  .booking-main { flex: 1; min-width: 0; }
-
-  .booking-title {
-    font-weight: 600;
-    font-size: 15px;
-    color: var(--text);
-  }
-
-  .booking-sub {
-    font-size: 13px;
-    color: var(--text-light);
-    margin-top: 2px;
-  }
-
-  .booking-meta {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 4px;
-    flex-shrink: 0;
-  }
-
-  .booking-total {
-    font-family: 'DM Serif Display', serif;
-    font-size: 1.2rem;
-    color: var(--accent-dark);
-  }
-
-  .booking-nights {
-    font-size: 12px;
-    color: var(--text-light);
-  }
-
-  .booking-actions { display: flex; gap: 6px; align-items: center; }
-
-  /* Status pill */
-  .status-pill {
-    font-size: 11px;
-    font-weight: 600;
-    border-radius: 20px;
-    padding: 3px 10px;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-
-  .status-upcoming { background: var(--blue-light); color: var(--blue); }
-  .status-active { background: var(--green-light); color: var(--green); }
-  .status-past { background: var(--sand); color: var(--text-light); }
-
-  /* ---- CALENDAR ---- */
-  .calendar-wrap {
-    background: var(--warm-white);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 1.5rem;
-    box-shadow: var(--shadow);
-  }
-
-  .cal-nav {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 1.5rem;
-  }
-
-  .cal-month {
-    font-family: 'DM Serif Display', serif;
-    font-size: 1.4rem;
-    color: var(--brown-dark);
-  }
-
-  .cal-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 4px;
-  }
-
-  .cal-day-label {
-    text-align: center;
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--text-light);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    padding: 4px 0 8px;
-  }
-
-  .cal-day {
-    aspect-ratio: 1;
-    border-radius: 8px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    cursor: default;
-    font-size: 14px;
-    position: relative;
-    transition: background 0.15s;
-    min-height: 48px;
-  }
-
-  .cal-day.other-month { color: var(--tan); }
-  .cal-day.today { font-weight: 700; color: var(--accent-dark); }
-  .cal-day.today::after {
-    content: '';
-    position: absolute;
-    bottom: 6px;
-    width: 4px;
-    height: 4px;
-    border-radius: 50%;
-    background: var(--accent);
-  }
-
-  .cal-day.booked {
-    background: var(--accent-light);
-    color: var(--accent-dark);
-    font-weight: 600;
-  }
-
-  .cal-day.blocked {
-    background: var(--red-light);
-    color: var(--red);
-    text-decoration: line-through;
-  }
-
-  .cal-day.has-dot::before {
-    content: '';
-    position: absolute;
-    top: 6px;
-    right: 6px;
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
-    background: var(--accent);
-  }
-
-  .cal-legend {
-    display: flex;
-    gap: 1.5rem;
-    margin-top: 1.25rem;
-    flex-wrap: wrap;
-  }
-
-  .legend-item {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 13px;
-    color: var(--text-mid);
-  }
-
-  .legend-dot {
-    width: 14px;
-    height: 14px;
-    border-radius: 4px;
-  }
-
-  /* ---- CLIENTS / DOGS ---- */
-  .cards-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 1rem;
-  }
-
-  .profile-card {
-    background: var(--warm-white);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 1.25rem;
-    box-shadow: var(--shadow);
-    transition: box-shadow 0.15s;
-  }
-
-  .profile-card:hover { box-shadow: var(--shadow-lg); }
-
-  .profile-avatar {
-    width: 52px;
-    height: 52px;
-    border-radius: 50%;
-    background: var(--accent-light);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    margin-bottom: 0.75rem;
-  }
-
-  .profile-name { font-weight: 600; font-size: 16px; margin-bottom: 2px; }
-  .profile-sub { font-size: 13px; color: var(--text-light); margin-bottom: 0.75rem; }
-  .profile-tag {
-    display: inline-block;
-    font-size: 12px;
-    background: var(--sand);
-    border-radius: 20px;
-    padding: 2px 10px;
-    color: var(--text-mid);
-    margin: 2px 2px 0 0;
-  }
-
-  .profile-actions { display: flex; gap: 6px; margin-top: 0.75rem; }
-
-  /* ---- MODAL ---- */
-  .modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(44, 32, 22, 0.45);
-    z-index: 200;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 1rem;
-  }
-
-  .modal-overlay.open { display: flex; }
-
-  .modal {
-    background: var(--warm-white);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 2rem;
-    width: 100%;
-    max-width: 520px;
-    max-height: 90vh;
-    overflow-y: auto;
-    box-shadow: var(--shadow-lg);
-    animation: modalIn 0.18s ease;
-  }
-
-  @keyframes modalIn {
-    from { transform: translateY(16px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-  }
-
-  .modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 1.5rem;
-  }
-
-  .modal-title {
-    font-family: 'DM Serif Display', serif;
-    font-size: 1.4rem;
-    color: var(--brown-dark);
-  }
-
-  .modal-close {
-    background: var(--sand);
-    border: none;
-    border-radius: 50%;
-    width: 32px;
-    height: 32px;
-    cursor: pointer;
-    font-size: 18px;
-    color: var(--text-mid);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.15s;
-  }
-
-  .modal-close:hover { background: var(--tan); }
-
-  /* ---- FORMS ---- */
-  .form-group { margin-bottom: 1.1rem; }
-
-  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-
-  label {
-    display: block;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text-mid);
-    margin-bottom: 5px;
-  }
-
-  input[type=text],
-  input[type=number],
-  input[type=date],
-  input[type=email],
-  input[type=tel],
-  textarea,
-  select {
-    width: 100%;
-    padding: 0.65rem 0.9rem;
-    border: 1.5px solid var(--border);
-    border-radius: 8px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 15px;
-    background: var(--cream);
-    color: var(--text);
-    transition: border-color 0.2s;
-  }
-
-  input:focus, textarea:focus, select:focus {
-    outline: none;
-    border-color: var(--accent);
-    background: var(--warm-white);
-  }
-
-  textarea { resize: vertical; min-height: 80px; }
-
-  .form-footer {
-    display: flex;
-    justify-content: flex-end;
-    gap: 0.75rem;
-    margin-top: 1.5rem;
-  }
-
-  /* ---- AVAILABILITY PAGE (PUBLIC) ---- */
-  #public-view {
-    display: none;
-    min-height: 100vh;
-    background: var(--cream);
-  }
-
-  .public-header {
-    text-align: center;
-    padding: 3rem 2rem 2rem;
-  }
-
-  .public-header h1 {
-    font-family: 'DM Serif Display', serif;
-    font-size: 2.5rem;
-    color: var(--brown-dark);
-  }
-
-  .public-header p {
-    color: var(--text-light);
-    margin-top: 0.5rem;
-  }
-
-  .public-calendar-wrap {
-    max-width: 700px;
-    margin: 0 auto;
-    padding: 0 1.5rem 3rem;
-  }
-
-  /* ---- EMPTY STATE ---- */
-  .empty-state {
-    text-align: center;
-    padding: 3rem;
-    color: var(--text-light);
-  }
-
-  .empty-state .empty-icon { font-size: 3rem; margin-bottom: 1rem; }
-  .empty-state p { margin-bottom: 1.25rem; }
-
-  /* ---- BLOCKED DAYS ---- */
-  .blocked-section {
-    background: var(--warm-white);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 1.25rem 1.5rem;
-    margin-top: 1.5rem;
-  }
-
-  .blocked-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0.6rem 0;
-    border-bottom: 1px solid var(--sand);
-    font-size: 14px;
-  }
-
-  .blocked-row:last-child { border-bottom: none; }
-
-  /* ---- EARNINGS ---- */
-  .earnings-month {
-    background: var(--warm-white);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 1rem 1.5rem;
-    margin-bottom: 0.75rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .earnings-month-name { font-weight: 600; color: var(--text); }
-  .earnings-month-count { font-size: 13px; color: var(--text-light); }
-  .earnings-month-total { font-family: 'DM Serif Display', serif; font-size: 1.3rem; color: var(--accent-dark); }
-
-  /* ---- TOAST ---- */
-  #toast {
-    position: fixed;
-    bottom: 2rem;
-    right: 2rem;
-    background: var(--brown-dark);
-    color: #fff;
-    padding: 0.75rem 1.25rem;
-    border-radius: var(--radius);
-    font-size: 14px;
-    z-index: 999;
-    opacity: 0;
-    transform: translateY(8px);
-    transition: all 0.25s;
-    pointer-events: none;
-  }
-
-  #toast.show { opacity: 1; transform: translateY(0); }
-
-  /* ---- GIST CONFIG ---- */
-  .gist-config {
-    background: var(--blue-light);
-    border: 1px solid #b5d4f4;
-    border-radius: var(--radius);
-    padding: 1rem 1.25rem;
-    margin-bottom: 1.5rem;
-    font-size: 13px;
-    color: var(--blue);
-  }
-
-  .gist-config a { color: var(--blue); font-weight: 600; }
-  .gist-config code {
-    background: rgba(74,106,138,0.12);
-    padding: 1px 6px;
-    border-radius: 4px;
-    font-size: 12px;
-  }
-
-  @media (max-width: 640px) {
-    header { padding: 0 1rem; }
-    main { padding: 1rem; }
-    .form-row { grid-template-columns: 1fr; }
-    nav button span { display: none; }
-  }
+:root {
+  --cream: #FAF7F2;
+  --warm-white: #FFFEF9;
+  --sand: #EDE8DF;
+  --tan: #D4C9B5;
+  --accent: #C17F4A;
+  --accent-light: #F0DFC8;
+  --accent-dark: #8B5A2B;
+  --green: #5A7A5A;
+  --green-light: #D4E8D4;
+  --red: #A84444;
+  --red-light: #F0D4D4;
+  --blue: #4A6A8A;
+  --blue-light: #D4E4F0;
+  --brown-dark: #5C4430;
+  --text: #2C2016;
+  --text-mid: #6B5740;
+  --text-light: #9C8A78;
+  --border: #E0D8CC;
+  --radius: 14px;
+  --shadow: 0 2px 12px rgba(139,111,71,0.10);
+  --shadow-lg: 0 8px 32px rgba(139,111,71,0.15);
+  --nav-h: 68px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; }
+body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--text); font-size: 15px; overscroll-behavior: none; }
+
+/* AUTH / SETUP SCREENS */
+#setup-screen, #auth-screen {
+  min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  padding: 1.5rem; background: var(--cream);
+}
+.auth-card {
+  background: var(--warm-white); border: 1px solid var(--border);
+  border-radius: 24px; padding: 2.5rem 2rem;
+  width: 100%; max-width: 380px; box-shadow: var(--shadow-lg); text-align: center;
+}
+.auth-paw { font-size: 48px; margin-bottom: 0.75rem; }
+.auth-card h1 { font-family: 'DM Serif Display', serif; font-size: 2rem; color: var(--brown-dark); margin-bottom: 0.25rem; }
+.auth-subtitle { color: var(--text-light); font-size: 14px; margin-bottom: 1.75rem; }
+.auth-card input {
+  width: 100%; padding: 0.85rem 1rem; border: 1.5px solid var(--border);
+  border-radius: var(--radius); font-family: 'DM Sans', sans-serif; font-size: 16px;
+  background: var(--cream); color: var(--text); margin-bottom: 0.75rem; transition: border-color 0.2s;
+}
+.auth-card input:focus { outline: none; border-color: var(--accent); }
+.auth-error { color: var(--red); font-size: 13px; margin-bottom: 0.75rem; display: none; }
+.auth-note {
+  font-size: 13px; color: var(--text-light); background: var(--sand);
+  border-radius: 10px; padding: 0.75rem; text-align: left; margin-bottom: 1rem; line-height: 1.5;
+}
+.auth-note strong { color: var(--text-mid); }
+.auth-note a { color: var(--blue); font-weight: 600; }
+.divider { border: none; border-top: 1px solid var(--border); margin: 1.25rem 0; }
+
+/* BUTTONS */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 0.75rem 1.25rem; border-radius: var(--radius);
+  font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500;
+  cursor: pointer; border: 1.5px solid transparent; transition: all 0.15s;
+  text-decoration: none; min-height: 48px;
+}
+.btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+.btn-primary:active { background: var(--accent-dark); }
+.btn-outline { background: transparent; color: var(--text-mid); border-color: var(--border); }
+.btn-outline:active { background: var(--sand); }
+.btn-danger { background: transparent; color: var(--red); border-color: var(--red-light); }
+.btn-danger:active { background: var(--red-light); }
+.btn-full { width: 100%; }
+.btn-sm { min-height: 38px; padding: 0.4rem 0.9rem; font-size: 13px; }
+
+/* APP SHELL */
+#app { display: none; height: 100vh; flex-direction: column; }
+#app.visible { display: flex; }
+
+.topbar {
+  background: var(--warm-white); border-bottom: 1px solid var(--border);
+  padding: 0 1rem; height: 56px; display: flex; align-items: center;
+  justify-content: space-between; flex-shrink: 0;
+}
+.topbar-logo { font-family: 'DM Serif Display', serif; font-size: 1.3rem; color: var(--brown-dark); display: flex; align-items: center; gap: 6px; }
+.topbar-right { display: flex; align-items: center; gap: 8px; }
+
+.sync-badge { font-size: 12px; padding: 3px 10px; border-radius: 20px; font-weight: 600; }
+.sync-ok { background: var(--green-light); color: var(--green); }
+.sync-local { background: var(--sand); color: var(--text-light); }
+.sync-ing { background: var(--accent-light); color: var(--accent-dark); }
+
+.content {
+  flex: 1; overflow-y: auto; padding: 1rem;
+  padding-bottom: calc(var(--nav-h) + 1rem);
+  -webkit-overflow-scrolling: touch;
+}
+
+.bottom-nav {
+  height: var(--nav-h); background: var(--warm-white);
+  border-top: 1px solid var(--border); display: flex; flex-shrink: 0;
+}
+.nav-btn {
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 3px; background: none; border: none;
+  font-family: 'DM Sans', sans-serif; font-size: 10px; font-weight: 500;
+  color: var(--text-light); cursor: pointer; padding: 0.5rem 0.25rem; transition: color 0.15s;
+}
+.nav-icon { font-size: 22px; line-height: 1; }
+.nav-btn.active { color: var(--accent-dark); }
+.nav-btn.active .nav-pip { background: var(--accent-light); border-radius: 12px; padding: 2px 12px; }
+
+/* VIEWS */
+.view { display: none; }
+.view.active { display: block; }
+
+/* PAGE HEADERS */
+.page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; }
+.page-title { font-family: 'DM Serif Display', serif; font-size: 1.5rem; color: var(--brown-dark); }
+
+/* STATS */
+.stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1.25rem; }
+.stat-card { background: var(--warm-white); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; box-shadow: var(--shadow); }
+.stat-label { font-size: 11px; font-weight: 600; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
+.stat-value { font-family: 'DM Serif Display', serif; font-size: 1.8rem; color: var(--brown-dark); line-height: 1; }
+
+/* BOOKING CARDS */
+.bookings-list { display: flex; flex-direction: column; gap: 0.75rem; }
+.booking-card { background: var(--warm-white); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; box-shadow: var(--shadow); }
+.booking-top { display: flex; align-items: flex-start; gap: 0.75rem; margin-bottom: 0.75rem; }
+.booking-avatar { width: 44px; height: 44px; border-radius: 50%; background: var(--accent-light); display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+.booking-info { flex: 1; min-width: 0; }
+.booking-name { font-weight: 600; font-size: 15px; }
+.booking-sub { font-size: 13px; color: var(--text-light); margin-top: 2px; }
+.booking-bottom { display: flex; align-items: center; justify-content: space-between; padding-top: 0.75rem; border-top: 1px solid var(--sand); }
+.booking-total { font-family: 'DM Serif Display', serif; font-size: 1.3rem; color: var(--accent-dark); }
+.booking-nights { font-size: 12px; color: var(--text-light); }
+.booking-actions { display: flex; gap: 6px; }
+
+.status-pill { display: inline-block; font-size: 10px; font-weight: 700; border-radius: 20px; padding: 2px 8px; text-transform: uppercase; letter-spacing: 0.06em; margin-left: 6px; }
+.s-upcoming { background: var(--blue-light); color: var(--blue); }
+.s-active { background: var(--green-light); color: var(--green); }
+.s-past { background: var(--sand); color: var(--text-light); }
+
+/* PROFILE CARDS */
+.cards-grid { display: grid; grid-template-columns: 1fr; gap: 0.75rem; }
+@media (min-width: 600px) { .cards-grid { grid-template-columns: 1fr 1fr; } }
+.profile-card { background: var(--warm-white); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.1rem; box-shadow: var(--shadow); }
+.profile-top { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; }
+.profile-avatar { width: 48px; height: 48px; border-radius: 50%; background: var(--accent-light); display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; font-weight: 600; }
+.profile-name { font-weight: 600; font-size: 15px; }
+.profile-sub { font-size: 13px; color: var(--text-light); margin-top: 1px; }
+.profile-tag { display: inline-block; font-size: 12px; background: var(--sand); border-radius: 20px; padding: 2px 10px; color: var(--text-mid); margin: 2px 2px 0 0; }
+.profile-note { font-size: 13px; color: var(--text-light); margin-top: 0.5rem; }
+.profile-actions { display: flex; gap: 6px; margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--sand); }
+
+/* CALENDAR */
+.cal-wrap { background: var(--warm-white); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; box-shadow: var(--shadow); }
+.cal-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+.cal-month-lbl { font-family: 'DM Serif Display', serif; font-size: 1.2rem; color: var(--brown-dark); }
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+.cal-dlbl { text-align: center; font-size: 11px; font-weight: 600; color: var(--text-light); text-transform: uppercase; padding: 4px 0 6px; }
+.cal-day { aspect-ratio: 1; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 13px; position: relative; min-height: 36px; }
+.cal-day.other { color: var(--tan); }
+.cal-day.today { font-weight: 700; color: var(--accent-dark); }
+.cal-day.today::after { content: ''; position: absolute; bottom: 4px; width: 4px; height: 4px; border-radius: 50%; background: var(--accent); }
+.cal-day.booked { background: var(--accent-light); color: var(--accent-dark); font-weight: 600; }
+.cal-day.blocked { background: var(--red-light); color: var(--red); text-decoration: line-through; }
+.cal-legend { display: flex; gap: 1rem; margin-top: 1rem; flex-wrap: wrap; }
+.legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-mid); }
+.legend-dot { width: 12px; height: 12px; border-radius: 4px; }
+
+.blocked-wrap { background: var(--warm-white); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; margin-top: 1rem; }
+.blocked-row { display: flex; align-items: center; justify-content: space-between; padding: 0.6rem 0; border-bottom: 1px solid var(--sand); font-size: 14px; }
+.blocked-row:last-child { border-bottom: none; }
+
+/* EARNINGS */
+.earn-row { background: var(--warm-white); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; margin-bottom: 0.75rem; display: flex; justify-content: space-between; align-items: center; }
+.earn-name { font-weight: 600; }
+.earn-count { font-size: 12px; color: var(--text-light); margin-top: 2px; }
+.earn-total { font-family: 'DM Serif Display', serif; font-size: 1.3rem; color: var(--accent-dark); }
+
+/* SETTINGS */
+.settings-section { background: var(--warm-white); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; margin-bottom: 1rem; box-shadow: var(--shadow); }
+.settings-section h3 { font-weight: 600; font-size: 15px; margin-bottom: 1rem; }
+
+/* MODAL */
+.modal-overlay { position: fixed; inset: 0; background: rgba(44,32,22,0.5); z-index: 200; display: none; align-items: flex-end; justify-content: center; }
+.modal-overlay.open { display: flex; }
+.modal { background: var(--warm-white); border-radius: 24px 24px 0 0; padding: 1.25rem 1.25rem 2.5rem; width: 100%; max-width: 560px; max-height: 92vh; overflow-y: auto; animation: slideUp 0.22s ease; }
+@media (min-width: 600px) { .modal-overlay { align-items: center; padding: 1rem; } .modal { border-radius: 24px; max-height: 88vh; } }
+@keyframes slideUp { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.modal-handle { width: 40px; height: 4px; background: var(--tan); border-radius: 4px; margin: 0 auto 1.25rem; }
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; }
+.modal-title { font-family: 'DM Serif Display', serif; font-size: 1.3rem; color: var(--brown-dark); }
+.modal-close { background: var(--sand); border: none; border-radius: 50%; width: 34px; height: 34px; cursor: pointer; font-size: 18px; color: var(--text-mid); display: flex; align-items: center; justify-content: center; }
+
+/* FORMS */
+.form-group { margin-bottom: 1rem; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+label { display: block; font-size: 13px; font-weight: 600; color: var(--text-mid); margin-bottom: 5px; }
+input[type=text], input[type=number], input[type=date], input[type=email], input[type=tel], input[type=password], textarea, select {
+  width: 100%; padding: 0.75rem 0.9rem; border: 1.5px solid var(--border);
+  border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 16px;
+  background: var(--cream); color: var(--text); transition: border-color 0.2s; min-height: 48px;
+}
+input:focus, textarea:focus, select:focus { outline: none; border-color: var(--accent); background: var(--warm-white); }
+textarea { resize: vertical; min-height: 80px; }
+.form-footer { display: flex; gap: 0.75rem; margin-top: 1.25rem; }
+.form-footer .btn { flex: 1; }
+
+/* EMPTY STATE */
+.empty-state { text-align: center; padding: 2.5rem 1rem; color: var(--text-light); }
+.empty-icon { font-size: 3rem; margin-bottom: 0.75rem; }
+.empty-state p { margin-bottom: 1rem; }
+
+/* TOAST */
+#toast {
+  position: fixed; bottom: calc(var(--nav-h) + 1rem); left: 50%;
+  transform: translateX(-50%) translateY(8px);
+  background: var(--brown-dark); color: #fff;
+  padding: 0.6rem 1.25rem; border-radius: 20px;
+  font-size: 14px; z-index: 999; opacity: 0; transition: all 0.25s;
+  pointer-events: none; white-space: nowrap;
+}
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* PUBLIC VIEW */
+#public-view { display: none; min-height: 100vh; background: var(--cream); padding-bottom: 2rem; }
+.public-header { text-align: center; padding: 2.5rem 1.5rem 1.5rem; }
+.public-header h1 { font-family: 'DM Serif Display', serif; font-size: 2rem; color: var(--brown-dark); }
+.public-header p { color: var(--text-light); margin-top: 0.4rem; font-size: 14px; }
+.public-cal-wrap { max-width: 480px; margin: 0 auto; padding: 0 1rem; }
+
+@media (max-width: 380px) { .form-row { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
 
-<!-- PUBLIC VIEW (shown when ?public in URL) -->
+<!-- PUBLIC VIEW -->
 <div id="public-view">
   <div class="public-header">
     <div style="font-size:3rem;margin-bottom:0.5rem">🐾</div>
-    <h1>Availability Calendar</h1>
-    <p id="public-biz-name">Check which dates are available for boarding</p>
+    <h1 id="pub-title">Availability</h1>
+    <p>Check which dates are available for boarding</p>
   </div>
-  <div class="public-calendar-wrap">
-    <div class="calendar-wrap">
+  <div class="public-cal-wrap">
+    <div class="cal-wrap">
       <div class="cal-nav">
-        <button class="btn btn-outline" onclick="pubPrevMonth()">← Prev</button>
-        <span class="cal-month" id="pub-cal-month"></span>
-        <button class="btn btn-outline" onclick="pubNextMonth()">Next →</button>
+        <button class="btn btn-outline btn-sm" onclick="pubPrev()">← Prev</button>
+        <span class="cal-month-lbl" id="pub-cal-lbl"></span>
+        <button class="btn btn-outline btn-sm" onclick="pubNext()">Next →</button>
       </div>
       <div class="cal-grid" id="pub-cal-grid"></div>
       <div class="cal-legend">
-        <div class="legend-item"><div class="legend-dot" style="background:var(--green-light);border:1px solid var(--green)"></div> Available</div>
-        <div class="legend-item"><div class="legend-dot" style="background:var(--accent-light);border:1px solid var(--accent)"></div> Booked</div>
-        <div class="legend-item"><div class="legend-dot" style="background:var(--red-light);border:1px solid var(--red)"></div> Not available</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--accent-light);border:1px solid var(--accent)"></div>Booked</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--red-light);border:1px solid var(--red)"></div>Not available</div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- AUTH SCREEN -->
-<div id="auth-screen">
+<!-- SETUP SCREEN — first time on a new device -->
+<div id="setup-screen" style="display:none">
   <div class="auth-card">
     <div class="auth-paw">🐾</div>
     <h1>Pawkeeper</h1>
-    <p>Dog boarding management</p>
-    <input type="password" id="pw-input" placeholder="Enter password" onkeydown="if(event.key==='Enter')login()">
-    <p class="auth-error" id="auth-error">Wrong password. Try again.</p>
-    <button class="btn btn-primary btn-full" onclick="login()">Sign in</button>
-    <div style="margin-top:1.25rem;padding-top:1.25rem;border-top:1px solid var(--border)">
-      <a href="?public" style="font-size:13px;color:var(--text-light)">View public availability →</a>
+    <p class="auth-subtitle">One-time setup for this device</p>
+    <div class="auth-note">
+      To keep your data in sync across devices, enter your <strong>GitHub Personal Access Token</strong> below. You only need to do this once per device.<br><br>
+      Don't have one? <a href="https://github.com/settings/tokens" target="_blank">Create one at github.com/settings/tokens</a> — tick the <strong>gist</strong> scope only.
     </div>
+    <input type="text" id="setup-token" placeholder="ghp_..." autocomplete="off" autocorrect="off" spellcheck="false">
+    <p class="auth-error" id="setup-error">Could not connect. Check your token and try again.</p>
+    <button class="btn btn-primary btn-full" onclick="doSetup()">Connect & continue</button>
+    <hr class="divider">
+    <button class="btn btn-outline btn-full" onclick="skipSetup()" style="font-size:13px">Use locally on this device only</button>
+  </div>
+</div>
+
+<!-- AUTH SCREEN -->
+<div id="auth-screen" style="display:none">
+  <div class="auth-card">
+    <div class="auth-paw">🐾</div>
+    <h1>Pawkeeper</h1>
+    <p class="auth-subtitle">Dog boarding management</p>
+    <input type="password" id="pw-input" placeholder="Password" onkeydown="if(event.key==='Enter')login()">
+    <p class="auth-error" id="auth-error">Wrong password — try again.</p>
+    <button class="btn btn-primary btn-full" onclick="login()">Sign in</button>
+    <hr class="divider">
+    <a href="?public" style="font-size:13px;color:var(--text-light)">View public availability →</a>
   </div>
 </div>
 
 <!-- MAIN APP -->
 <div id="app">
-  <header>
-    <div class="logo"><span>🐾</span> Pawkeeper</div>
-    <nav>
-      <button onclick="showView('dashboard')" class="active" id="nav-dashboard">📊 <span>Overview</span></button>
-      <button onclick="showView('bookings')" id="nav-bookings">📅 <span>Bookings</span></button>
-      <button onclick="showView('calendar')" id="nav-calendar">🗓 <span>Calendar</span></button>
-      <button onclick="showView('clients')" id="nav-clients">👥 <span>Clients</span></button>
-      <button onclick="showView('dogs')" id="nav-dogs">🐶 <span>Dogs</span></button>
-      <button onclick="showView('earnings')" id="nav-earnings">💰 <span>Earnings</span></button>
-    </nav>
-    <div style="display:flex;align-items:center;gap:0.75rem">
-      <span class="public-badge">Admin</span>
-      <button class="btn btn-outline" onclick="logout()" style="font-size:13px">Sign out</button>
+  <div class="topbar">
+    <div class="topbar-logo">🐾 Pawkeeper</div>
+    <div class="topbar-right">
+      <span class="sync-badge sync-local" id="sync-badge">Local</span>
+      <button class="btn btn-outline btn-sm" onclick="logout()">Sign out</button>
     </div>
-  </header>
+  </div>
 
-  <main>
-
-    <!-- GIST CONFIG BANNER -->
-    <div class="gist-config" id="gist-banner">
-      ⚙️ <strong>Setup:</strong> To sync data between you and your partner, create a <a href="https://gist.github.com" target="_blank">GitHub Gist</a> with a file named <code>pawkeeper.json</code> containing <code>{"bookings":[],"clients":[],"dogs":[],"blocked":[]}</code>, then enter your Gist ID and Personal Access Token in <strong>Settings</strong>.
-      <button class="btn btn-outline" onclick="showView('settings')" style="margin-left:1rem;font-size:12px">Open Settings</button>
-    </div>
+  <div class="content" id="scroll-content">
 
     <!-- DASHBOARD -->
     <div class="view active" id="view-dashboard">
+      <div class="page-header">
+        <h2 class="page-title">Overview</h2>
+        <button class="btn btn-primary btn-sm" onclick="openBookingModal()">+ Book</button>
+      </div>
       <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-label">Active boardings</div>
-          <div class="stat-value" id="stat-active">0</div>
-          <div class="stat-sub">right now</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Upcoming</div>
-          <div class="stat-value" id="stat-upcoming">0</div>
-          <div class="stat-sub">bookings</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">This month</div>
-          <div class="stat-value" id="stat-month-earn">£0</div>
-          <div class="stat-sub">earnings</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Total clients</div>
-          <div class="stat-value" id="stat-clients">0</div>
-          <div class="stat-sub">registered</div>
-        </div>
+        <div class="stat-card"><div class="stat-label">Active now</div><div class="stat-value" id="stat-active">0</div></div>
+        <div class="stat-card"><div class="stat-label">Upcoming</div><div class="stat-value" id="stat-upcoming">0</div></div>
+        <div class="stat-card"><div class="stat-label">This month</div><div class="stat-value" id="stat-month">£0</div></div>
+        <div class="stat-card"><div class="stat-label">Clients</div><div class="stat-value" id="stat-clients">0</div></div>
       </div>
-
-      <div class="section-header">
-        <h2 class="section-title">Upcoming & active bookings</h2>
-        <button class="btn btn-primary" onclick="openBookingModal()">+ New booking</button>
+      <div class="page-header" style="margin-top:0.25rem">
+        <h3 style="font-weight:600;font-size:15px">Upcoming & active</h3>
       </div>
-      <div class="bookings-list" id="upcoming-bookings-list">
-        <div class="empty-state"><div class="empty-icon">📋</div><p>No upcoming bookings yet</p><button class="btn btn-primary" onclick="openBookingModal()">Add first booking</button></div>
-      </div>
+      <div class="bookings-list" id="upcoming-list"></div>
     </div>
 
-    <!-- BOOKINGS VIEW -->
+    <!-- BOOKINGS -->
     <div class="view" id="view-bookings">
-      <div class="section-header">
-        <h2 class="section-title">All bookings</h2>
-        <button class="btn btn-primary" onclick="openBookingModal()">+ New booking</button>
+      <div class="page-header">
+        <h2 class="page-title">Bookings</h2>
+        <button class="btn btn-primary btn-sm" onclick="openBookingModal()">+ New</button>
       </div>
-      <div class="bookings-list" id="all-bookings-list"></div>
+      <div class="bookings-list" id="all-list"></div>
     </div>
 
-    <!-- CALENDAR VIEW -->
+    <!-- CALENDAR -->
     <div class="view" id="view-calendar">
-      <div class="section-header">
-        <h2 class="section-title">Calendar</h2>
-        <button class="btn btn-outline" onclick="openBlockModal()">🚫 Block dates</button>
+      <div class="page-header">
+        <h2 class="page-title">Calendar</h2>
+        <button class="btn btn-outline btn-sm" onclick="openBlockModal()">🚫 Block</button>
       </div>
-      <div class="calendar-wrap">
+      <div class="cal-wrap">
         <div class="cal-nav">
-          <button class="btn btn-outline" onclick="prevMonth()">← Prev</button>
-          <span class="cal-month" id="cal-month-label"></span>
-          <button class="btn btn-outline" onclick="nextMonth()">Next →</button>
+          <button class="btn btn-outline btn-sm" onclick="prevMonth()">← Prev</button>
+          <span class="cal-month-lbl" id="cal-lbl"></span>
+          <button class="btn btn-outline btn-sm" onclick="nextMonth()">Next →</button>
         </div>
         <div class="cal-grid" id="cal-grid"></div>
         <div class="cal-legend">
-          <div class="legend-item"><div class="legend-dot" style="background:var(--accent-light);border:1px solid var(--accent)"></div> Booked</div>
-          <div class="legend-item"><div class="legend-dot" style="background:var(--red-light);border:1px solid var(--red)"></div> Blocked / personal</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--accent-light);border:1px solid var(--accent)"></div>Booked</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--red-light);border:1px solid var(--red)"></div>Blocked</div>
         </div>
       </div>
-
-      <div class="blocked-section" style="margin-top:1.5rem">
-        <div class="section-header" style="margin-bottom:0.75rem">
-          <h3 style="font-size:1rem;font-weight:600;color:var(--text)">Blocked periods</h3>
-        </div>
-        <div id="blocked-list"><p style="color:var(--text-light);font-size:14px">No blocked dates.</p></div>
+      <div class="blocked-wrap">
+        <div style="font-weight:600;font-size:14px;margin-bottom:0.75rem">Blocked periods</div>
+        <div id="blocked-list"></div>
       </div>
     </div>
 
-    <!-- CLIENTS VIEW -->
+    <!-- CLIENTS -->
     <div class="view" id="view-clients">
-      <div class="section-header">
-        <h2 class="section-title">Clients</h2>
-        <button class="btn btn-primary" onclick="openClientModal()">+ Add client</button>
+      <div class="page-header">
+        <h2 class="page-title">Clients</h2>
+        <button class="btn btn-primary btn-sm" onclick="openClientModal()">+ Add</button>
       </div>
       <div class="cards-grid" id="clients-grid"></div>
     </div>
 
-    <!-- DOGS VIEW -->
+    <!-- DOGS -->
     <div class="view" id="view-dogs">
-      <div class="section-header">
-        <h2 class="section-title">Dogs</h2>
-        <button class="btn btn-primary" onclick="openDogModal()">+ Add dog</button>
+      <div class="page-header">
+        <h2 class="page-title">Dogs</h2>
+        <button class="btn btn-primary btn-sm" onclick="openDogModal()">+ Add</button>
       </div>
       <div class="cards-grid" id="dogs-grid"></div>
     </div>
 
-    <!-- EARNINGS VIEW -->
+    <!-- EARNINGS -->
     <div class="view" id="view-earnings">
-      <div class="section-header">
-        <h2 class="section-title">Earnings</h2>
+      <div class="page-header"><h2 class="page-title">Earnings</h2></div>
+      <div class="stats-grid" style="margin-bottom:1.25rem">
+        <div class="stat-card"><div class="stat-label">This month</div><div class="stat-value" id="e-month">£0</div></div>
+        <div class="stat-card"><div class="stat-label">This year</div><div class="stat-value" id="e-year">£0</div></div>
+        <div class="stat-card" style="grid-column:1/-1"><div class="stat-label">All time</div><div class="stat-value" id="e-total">£0</div></div>
       </div>
-      <div class="stats-grid" style="margin-bottom:2rem">
-        <div class="stat-card">
-          <div class="stat-label">This year</div>
-          <div class="stat-value" id="earn-year">£0</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">This month</div>
-          <div class="stat-value" id="earn-month">£0</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">All time</div>
-          <div class="stat-value" id="earn-total">£0</div>
-        </div>
-      </div>
-      <h3 style="font-size:1rem;font-weight:600;color:var(--text);margin-bottom:1rem">Monthly breakdown</h3>
-      <div id="earnings-breakdown"></div>
+      <div id="earnings-list"></div>
     </div>
 
-    <!-- SETTINGS VIEW -->
+    <!-- SETTINGS -->
     <div class="view" id="view-settings">
-      <div class="section-header">
-        <h2 class="section-title">Settings</h2>
+      <div class="page-header"><h2 class="page-title">Settings</h2></div>
+
+      <div class="settings-section">
+        <h3>Sync status</h3>
+        <p id="sync-status-text" style="font-size:14px;color:var(--text-mid);margin-bottom:1rem;line-height:1.5"></p>
+        <div class="form-group">
+          <label>Personal Access Token</label>
+          <input type="text" id="s-token" placeholder="ghp_..." autocomplete="off" spellcheck="false">
+        </div>
+        <button class="btn btn-primary btn-full" onclick="saveToken()">Save & connect</button>
       </div>
-      <div style="max-width:480px">
-        <div style="background:var(--warm-white);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1.5rem">
-          <h3 style="font-weight:600;margin-bottom:1rem">GitHub Gist sync</h3>
-          <div class="form-group">
-            <label>Gist ID</label>
-            <input type="text" id="gist-id-input" placeholder="e.g. a1b2c3d4e5f6...">
-          </div>
-          <div class="form-group">
-            <label>Personal Access Token (with Gist scope)</label>
-            <input type="text" id="gist-token-input" placeholder="ghp_...">
-          </div>
-          <div class="form-group">
-            <label>Business name (shown on public page)</label>
-            <input type="text" id="biz-name-input" placeholder="e.g. Happy Paws Boarding">
-          </div>
-          <button class="btn btn-primary" onclick="saveSettings()">Save settings</button>
-        </div>
 
-        <div style="background:var(--warm-white);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1.5rem">
-          <h3 style="font-weight:600;margin-bottom:1rem">Password</h3>
-          <div class="form-group">
-            <label>New password</label>
-            <input type="password" id="new-pw-input" placeholder="Enter new password">
-          </div>
-          <button class="btn btn-primary" onclick="changePassword()">Change password</button>
-        </div>
+      <div class="settings-section">
+        <h3>Business name</h3>
+        <div class="form-group"><input type="text" id="s-bizname" placeholder="Happy Paws Boarding"></div>
+        <button class="btn btn-primary btn-full" onclick="saveBizName()">Save name</button>
+      </div>
 
-        <div style="background:var(--warm-white);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem">
-          <h3 style="font-weight:600;margin-bottom:0.75rem">Public availability link</h3>
-          <p style="font-size:13px;color:var(--text-light);margin-bottom:0.75rem">Share this URL with potential clients so they can check your availability:</p>
-          <code id="public-url" style="font-size:13px;background:var(--sand);padding:0.5rem 0.75rem;border-radius:8px;display:block;word-break:break-all"></code>
-          <button class="btn btn-outline" style="margin-top:0.75rem;font-size:13px" onclick="copyPublicUrl()">Copy link</button>
-        </div>
+      <div class="settings-section">
+        <h3>Password</h3>
+        <p style="font-size:13px;color:var(--text-light);margin-bottom:0.75rem">Changing this updates the password on ALL devices immediately.</p>
+        <div class="form-group"><input type="password" id="s-pw" placeholder="New password"></div>
+        <button class="btn btn-primary btn-full" onclick="changePassword()">Change password</button>
+      </div>
+
+      <div class="settings-section">
+        <h3>Public availability link</h3>
+        <p style="font-size:13px;color:var(--text-light);margin-bottom:0.75rem">Share with potential clients to show your calendar:</p>
+        <code id="pub-url" style="font-size:12px;background:var(--sand);padding:0.6rem;border-radius:8px;display:block;word-break:break-all;line-height:1.5"></code>
+        <button class="btn btn-outline btn-full" style="margin-top:0.75rem" onclick="copyPubUrl()">Copy link</button>
       </div>
     </div>
 
-  </main>
+  </div><!-- end .content -->
+
+  <nav class="bottom-nav">
+    <button class="nav-btn active" id="nav-dashboard" onclick="showView('dashboard')">
+      <div class="nav-pip"><div class="nav-icon">📊</div></div><span>Overview</span>
+    </button>
+    <button class="nav-btn" id="nav-bookings" onclick="showView('bookings')">
+      <div class="nav-pip"><div class="nav-icon">📋</div></div><span>Bookings</span>
+    </button>
+    <button class="nav-btn" id="nav-calendar" onclick="showView('calendar')">
+      <div class="nav-pip"><div class="nav-icon">🗓</div></div><span>Calendar</span>
+    </button>
+    <button class="nav-btn" id="nav-clients" onclick="showView('clients')">
+      <div class="nav-pip"><div class="nav-icon">👥</div></div><span>Clients</span>
+    </button>
+    <button class="nav-btn" id="nav-settings" onclick="showView('settings')">
+      <div class="nav-pip"><div class="nav-icon">⚙️</div></div><span>Settings</span>
+    </button>
+  </nav>
 </div>
 
 <!-- MODALS -->
-
-<!-- Booking modal -->
 <div class="modal-overlay" id="booking-modal">
   <div class="modal">
+    <div class="modal-handle"></div>
     <div class="modal-header">
-      <h2 class="modal-title" id="booking-modal-title">New booking</h2>
+      <h2 class="modal-title" id="bk-title">New booking</h2>
       <button class="modal-close" onclick="closeModal('booking-modal')">✕</button>
     </div>
-    <div class="form-group">
-      <label>Dog *</label>
-      <select id="bk-dog"></select>
-    </div>
-    <div class="form-group">
-      <label>Client *</label>
-      <select id="bk-client"></select>
+    <div class="form-group"><label>Dog *</label><select id="bk-dog"></select></div>
+    <div class="form-group"><label>Client *</label><select id="bk-client"></select></div>
+    <div class="form-row">
+      <div class="form-group"><label>Check-in *</label><input type="date" id="bk-start"></div>
+      <div class="form-group"><label>Check-out *</label><input type="date" id="bk-end"></div>
     </div>
     <div class="form-row">
-      <div class="form-group">
-        <label>Check-in date *</label>
-        <input type="date" id="bk-start">
-      </div>
-      <div class="form-group">
-        <label>Check-out date *</label>
-        <input type="date" id="bk-end">
-      </div>
+      <div class="form-group"><label>Rate/night (£) *</label><input type="number" id="bk-rate" min="0" step="0.5" placeholder="30"></div>
+      <div class="form-group"><label>Total</label><input type="text" id="bk-total" readonly style="background:var(--sand);cursor:default"></div>
     </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label>Rate per night (£) *</label>
-        <input type="number" id="bk-rate" min="0" step="0.50" placeholder="30">
-      </div>
-      <div class="form-group">
-        <label>Calculated total</label>
-        <input type="text" id="bk-total" readonly placeholder="—" style="background:var(--sand);cursor:default">
-      </div>
-    </div>
-    <div class="form-group">
-      <label>Notes (feeding, medication, etc.)</label>
-      <textarea id="bk-notes" placeholder="Any special instructions…"></textarea>
-    </div>
+    <div class="form-group"><label>Notes</label><textarea id="bk-notes" placeholder="Feeding, medication, special care…"></textarea></div>
     <div class="form-footer">
       <button class="btn btn-outline" onclick="closeModal('booking-modal')">Cancel</button>
       <button class="btn btn-primary" onclick="saveBooking()">Save booking</button>
@@ -979,102 +472,63 @@
   </div>
 </div>
 
-<!-- Client modal -->
 <div class="modal-overlay" id="client-modal">
   <div class="modal">
+    <div class="modal-handle"></div>
     <div class="modal-header">
-      <h2 class="modal-title" id="client-modal-title">New client</h2>
+      <h2 class="modal-title" id="cl-title">New client</h2>
       <button class="modal-close" onclick="closeModal('client-modal')">✕</button>
     </div>
     <div class="form-row">
-      <div class="form-group">
-        <label>First name *</label>
-        <input type="text" id="cl-first" placeholder="Emma">
-      </div>
-      <div class="form-group">
-        <label>Last name *</label>
-        <input type="text" id="cl-last" placeholder="Johnson">
-      </div>
+      <div class="form-group"><label>First name *</label><input type="text" id="cl-first" placeholder="Emma"></div>
+      <div class="form-group"><label>Last name *</label><input type="text" id="cl-last" placeholder="Johnson"></div>
     </div>
-    <div class="form-group">
-      <label>Email</label>
-      <input type="email" id="cl-email" placeholder="emma@example.com">
-    </div>
-    <div class="form-group">
-      <label>Phone</label>
-      <input type="tel" id="cl-phone" placeholder="+44 7700 000000">
-    </div>
-    <div class="form-group">
-      <label>Notes</label>
-      <textarea id="cl-notes" placeholder="Anything useful to remember…"></textarea>
-    </div>
+    <div class="form-group"><label>Email</label><input type="email" id="cl-email" placeholder="emma@example.com"></div>
+    <div class="form-group"><label>Phone</label><input type="tel" id="cl-phone" placeholder="+44 7700 000000"></div>
+    <div class="form-group"><label>Notes</label><textarea id="cl-notes" placeholder="Anything useful…"></textarea></div>
     <div class="form-footer">
       <button class="btn btn-outline" onclick="closeModal('client-modal')">Cancel</button>
-      <button class="btn btn-primary" onclick="saveClient()">Save client</button>
+      <button class="btn btn-primary" onclick="saveClient()">Save</button>
     </div>
   </div>
 </div>
 
-<!-- Dog modal -->
 <div class="modal-overlay" id="dog-modal">
   <div class="modal">
+    <div class="modal-handle"></div>
     <div class="modal-header">
-      <h2 class="modal-title" id="dog-modal-title">Add dog</h2>
+      <h2 class="modal-title" id="dg-title">Add dog</h2>
       <button class="modal-close" onclick="closeModal('dog-modal')">✕</button>
     </div>
     <div class="form-row">
-      <div class="form-group">
-        <label>Dog's name *</label>
-        <input type="text" id="dg-name" placeholder="Biscuit">
-      </div>
-      <div class="form-group">
-        <label>Breed</label>
-        <input type="text" id="dg-breed" placeholder="Golden Retriever">
-      </div>
+      <div class="form-group"><label>Name *</label><input type="text" id="dg-name" placeholder="Biscuit"></div>
+      <div class="form-group"><label>Breed</label><input type="text" id="dg-breed" placeholder="Labrador"></div>
     </div>
     <div class="form-row">
-      <div class="form-group">
-        <label>Age (years)</label>
-        <input type="number" id="dg-age" min="0" max="25" placeholder="3">
-      </div>
-      <div class="form-group">
-        <label>Owner (client)</label>
-        <select id="dg-owner"></select>
-      </div>
+      <div class="form-group"><label>Age (years)</label><input type="number" id="dg-age" min="0" max="25" placeholder="3"></div>
+      <div class="form-group"><label>Owner</label><select id="dg-owner"></select></div>
     </div>
-    <div class="form-group">
-      <label>Notes (allergies, medication, behaviour)</label>
-      <textarea id="dg-notes" placeholder="e.g. Takes 1 tablet in the morning, nervous around cats…"></textarea>
-    </div>
+    <div class="form-group"><label>Notes</label><textarea id="dg-notes" placeholder="Allergies, medication, behaviour…"></textarea></div>
     <div class="form-footer">
       <button class="btn btn-outline" onclick="closeModal('dog-modal')">Cancel</button>
-      <button class="btn btn-primary" onclick="saveDog()">Save dog</button>
+      <button class="btn btn-primary" onclick="saveDog()">Save</button>
     </div>
   </div>
 </div>
 
-<!-- Block dates modal -->
 <div class="modal-overlay" id="block-modal">
   <div class="modal">
+    <div class="modal-handle"></div>
     <div class="modal-header">
       <h2 class="modal-title">Block dates</h2>
       <button class="modal-close" onclick="closeModal('block-modal')">✕</button>
     </div>
-    <p style="font-size:14px;color:var(--text-light);margin-bottom:1.25rem">Mark dates as unavailable (holidays, personal time, etc.)</p>
+    <p style="font-size:14px;color:var(--text-light);margin-bottom:1rem">Mark dates as unavailable — holidays, personal time, etc.</p>
     <div class="form-row">
-      <div class="form-group">
-        <label>From *</label>
-        <input type="date" id="bl-start">
-      </div>
-      <div class="form-group">
-        <label>To *</label>
-        <input type="date" id="bl-end">
-      </div>
+      <div class="form-group"><label>From *</label><input type="date" id="bl-start"></div>
+      <div class="form-group"><label>To *</label><input type="date" id="bl-end"></div>
     </div>
-    <div class="form-group">
-      <label>Reason (optional)</label>
-      <input type="text" id="bl-reason" placeholder="Holiday, personal, etc.">
-    </div>
+    <div class="form-group"><label>Reason (optional)</label><input type="text" id="bl-reason" placeholder="Holiday, personal…"></div>
     <div class="form-footer">
       <button class="btn btn-outline" onclick="closeModal('block-modal')">Cancel</button>
       <button class="btn btn-primary" onclick="saveBlock()">Block dates</button>
@@ -1085,701 +539,459 @@
 <div id="toast"></div>
 
 <script>
-// ============================================================
-// CONFIG & STATE
-// ============================================================
+// ── CONFIG ─────────────────────────────────────────────────
+// After creating your Gist, paste its ID here (the long string in the URL)
+const GIST_ID = '53911e01a8e2c920a4780ec5541203f3';   // e.g. 'a1b2c3d4e5f6789...'
 const DEFAULT_PW = 'pawkeeper2024';
-const SETTINGS_KEY = 'pawkeeper_settings';
-const SESSION_KEY = 'pawkeeper_session';
 
-let state = { bookings: [], clients: [], dogs: [], blocked: [] };
-let calYear, calMonth;
-let pubYear, pubMonth;
-let editingId = { booking: null, client: null, dog: null };
+// ── KEYS ───────────────────────────────────────────────────
+const K_TOKEN = 'pk_token';
+const K_SESSION = 'pk_session';
+const K_DATA = 'pk_data';
 
-// ============================================================
-// INIT
-// ============================================================
-window.onload = () => {
-  const url = new URL(location.href);
-  if (url.searchParams.has('public')) {
-    showPublicView();
-    return;
+// ── STATE ──────────────────────────────────────────────────
+let S = { bookings:[], clients:[], dogs:[], blocked:[], password:DEFAULT_PW, bizName:'Pawkeeper' };
+let calY, calM, pubY, pubM;
+let editId = { booking:null, client:null, dog:null };
+let synced = false;
+
+// ── INIT ───────────────────────────────────────────────────
+window.onload = async () => {
+  if (new URL(location.href).searchParams.has('public')) {
+    await loadData(); showPublicView(); return;
   }
-  const s = getSettings();
-  document.getElementById('public-url').textContent = location.origin + location.pathname + '?public';
-  if (sessionStorage.getItem(SESSION_KEY) === 'ok') {
-    showApp();
+  const token = localStorage.getItem(K_TOKEN);
+  // If Gist configured but no token yet → setup screen
+  if (GIST_ID && !token) {
+    document.getElementById('setup-screen').style.display = 'flex'; return;
   }
+  // Otherwise go straight to auth (load data happens after login)
+  showAuth();
 };
 
-// ============================================================
-// AUTH
-// ============================================================
-function getSettings() {
-  try { return JSON.parse(localStorage.getItem(SETTINGS_KEY)) || {}; } catch { return {}; }
+// ── SETUP ──────────────────────────────────────────────────
+async function doSetup() {
+  const t = document.getElementById('setup-token').value.trim();
+  if (!t) return;
+  if (GIST_ID) {
+    try {
+      const r = await gistFetch(t);
+      if (!r.ok) throw new Error();
+    } catch { document.getElementById('setup-error').style.display = 'block'; return; }
+  }
+  localStorage.setItem(K_TOKEN, t);
+  document.getElementById('setup-screen').style.display = 'none';
+  showAuth();
+}
+function skipSetup() {
+  document.getElementById('setup-screen').style.display = 'none';
+  showAuth();
 }
 
-function saveSettingsData(obj) {
-  const existing = getSettings();
-  localStorage.setItem(SETTINGS_KEY, JSON.stringify({ ...existing, ...obj }));
+// ── AUTH ───────────────────────────────────────────────────
+function showAuth() {
+  if (sessionStorage.getItem(K_SESSION) === 'ok') { launchApp(); return; }
+  document.getElementById('auth-screen').style.display = 'flex';
 }
 
-function login() {
-  const s = getSettings();
-  const pw = s.password || DEFAULT_PW;
-  if (document.getElementById('pw-input').value === pw) {
-    sessionStorage.setItem(SESSION_KEY, 'ok');
-    showApp();
+async function login() {
+  const pw = document.getElementById('pw-input').value;
+  // Load data first so we have the latest password from Gist
+  await loadData();
+  const correct = S.password || DEFAULT_PW;
+  if (pw === correct) {
+    sessionStorage.setItem(K_SESSION, 'ok');
+    document.getElementById('auth-screen').style.display = 'none';
+    launchApp();
   } else {
     document.getElementById('auth-error').style.display = 'block';
   }
 }
 
-function logout() {
-  sessionStorage.removeItem(SESSION_KEY);
-  location.reload();
+function logout() { sessionStorage.removeItem(K_SESSION); location.reload(); }
+
+// ── LAUNCH ─────────────────────────────────────────────────
+function launchApp() {
+  const now = new Date();
+  calY = now.getFullYear(); calM = now.getMonth();
+  document.getElementById('app').classList.add('visible');
+  document.getElementById('pub-url').textContent = location.origin + location.pathname + '?public';
+  renderAll();
+  setSyncBadge();
+  updateSyncText();
 }
 
-function showApp() {
-  document.getElementById('auth-screen').style.display = 'none';
-  document.getElementById('app').style.display = 'block';
-  const s = getSettings();
-  if (s.gistId) document.getElementById('gist-banner').style.display = 'none';
-  document.getElementById('gist-id-input').value = s.gistId || '';
-  document.getElementById('gist-token-input').value = s.token || '';
-  document.getElementById('biz-name-input').value = s.bizName || 'Pawkeeper';
-  const now = new Date();
-  calYear = now.getFullYear();
-  calMonth = now.getMonth();
-  loadData().then(() => {
-    renderAll();
+// ── DATA ───────────────────────────────────────────────────
+function token() { return localStorage.getItem(K_TOKEN) || ''; }
+
+function gistFetch(t) {
+  return fetch(`https://api.github.com/gists/${GIST_ID}`, {
+    headers: { Authorization: `token ${t||token()}`, Accept: 'application/vnd.github+json' }
   });
 }
 
-function saveSettings() {
-  const gistId = document.getElementById('gist-id-input').value.trim();
-  const token = document.getElementById('gist-token-input').value.trim();
-  const bizName = document.getElementById('biz-name-input').value.trim();
-  saveSettingsData({ gistId, token, bizName });
-  if (gistId) document.getElementById('gist-banner').style.display = 'none';
-  showToast('Settings saved');
-}
-
-function changePassword() {
-  const pw = document.getElementById('new-pw-input').value;
-  if (!pw) return;
-  saveSettingsData({ password: pw });
-  document.getElementById('new-pw-input').value = '';
-  showToast('Password updated');
-}
-
-function copyPublicUrl() {
-  navigator.clipboard.writeText(document.getElementById('public-url').textContent);
-  showToast('Link copied!');
-}
-
-// ============================================================
-// DATA PERSISTENCE (Gist + localStorage fallback)
-// ============================================================
 async function loadData() {
-  const s = getSettings();
-  if (s.gistId && s.token) {
+  if (GIST_ID && token()) {
     try {
-      const r = await fetch(`https://api.github.com/gists/${s.gistId}`, {
-        headers: { Authorization: `token ${s.token}`, Accept: 'application/vnd.github+json' }
-      });
-      const data = await r.json();
-      const file = data.files && data.files['pawkeeper.json'];
-      if (file) {
-        state = JSON.parse(file.content);
-        saveLocal();
-        return;
+      const r = await gistFetch();
+      if (r.ok) {
+        const d = await r.json();
+        const f = d.files && d.files['pawkeeper.json'];
+        if (f) { S = {...S, ...JSON.parse(f.content)}; saveLocal(); synced = true; return; }
       }
-    } catch (e) { console.warn('Gist load failed, using local', e); }
+    } catch(e) { console.warn('Gist load failed', e); }
   }
   loadLocal();
+  synced = false;
 }
 
 async function saveData() {
   saveLocal();
-  const s = getSettings();
-  if (s.gistId && s.token) {
+  if (GIST_ID && token()) {
+    setSyncBadge('ing');
     try {
-      await fetch(`https://api.github.com/gists/${s.gistId}`, {
+      const r = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
         method: 'PATCH',
-        headers: {
-          Authorization: `token ${s.token}`,
-          'Content-Type': 'application/json',
-          Accept: 'application/vnd.github+json'
-        },
-        body: JSON.stringify({ files: { 'pawkeeper.json': { content: JSON.stringify(state) } } })
+        headers: { Authorization: `token ${token()}`, 'Content-Type': 'application/json', Accept: 'application/vnd.github+json' },
+        body: JSON.stringify({ files: { 'pawkeeper.json': { content: JSON.stringify(S) } } })
       });
-    } catch (e) { console.warn('Gist save failed', e); }
+      synced = r.ok;
+    } catch { synced = false; }
+    setSyncBadge();
   }
 }
 
-function saveLocal() { localStorage.setItem('pawkeeper_data', JSON.stringify(state)); }
-function loadLocal() {
-  try { const d = localStorage.getItem('pawkeeper_data'); if (d) state = JSON.parse(d); } catch {}
+function saveLocal() { try { localStorage.setItem(K_DATA, JSON.stringify(S)); } catch{} }
+function loadLocal() { try { const d = localStorage.getItem(K_DATA); if(d) S={...S,...JSON.parse(d)}; } catch{} }
+
+function setSyncBadge(state) {
+  const b = document.getElementById('sync-badge');
+  if (!b) return;
+  b.className = 'sync-badge';
+  if (state === 'ing') { b.classList.add('sync-ing'); b.textContent = 'Saving…'; return; }
+  if (!GIST_ID) { b.classList.add('sync-local'); b.textContent = 'Local'; return; }
+  if (synced) { b.classList.add('sync-ok'); b.textContent = '✓ Synced'; }
+  else { b.classList.add('sync-local'); b.textContent = 'Local'; }
 }
 
-// ============================================================
-// NAVIGATION
-// ============================================================
+function updateSyncText() {
+  const el = document.getElementById('sync-status-text');
+  if (!el) return;
+  document.getElementById('s-token').value = token();
+  document.getElementById('s-bizname').value = S.bizName || '';
+  if (!GIST_ID) {
+    el.innerHTML = '⚠️ No Gist ID is set in the HTML yet. Open the file and paste your Gist ID into the <code>GIST_ID</code> variable at the top of the script.';
+  } else if (synced) {
+    el.textContent = '✅ Connected and syncing. All devices with a valid token share the same data in real time.';
+  } else {
+    el.textContent = '⚠️ Not syncing. Paste a valid Personal Access Token below and tap "Save & connect".';
+  }
+}
+
+// ── SETTINGS ACTIONS ───────────────────────────────────────
+async function saveToken() {
+  const t = document.getElementById('s-token').value.trim();
+  if (!t) return;
+  setSyncBadge('ing');
+  if (GIST_ID) {
+    try {
+      const r = await gistFetch(t);
+      if (!r.ok) { showToast('Token rejected — check and try again'); setSyncBadge(); return; }
+      const d = await r.json();
+      const f = d.files && d.files['pawkeeper.json'];
+      if (f) { S = {...S, ...JSON.parse(f.content)}; saveLocal(); }
+      synced = true;
+    } catch { showToast('Connection failed'); setSyncBadge(); return; }
+  }
+  localStorage.setItem(K_TOKEN, t);
+  setSyncBadge(); updateSyncText(); renderAll(); showToast('Connected & synced!');
+}
+
+function saveBizName() {
+  S.bizName = document.getElementById('s-bizname').value.trim() || 'Pawkeeper';
+  saveData().then(() => showToast('Business name saved'));
+}
+
+function changePassword() {
+  const pw = document.getElementById('s-pw').value;
+  if (!pw) return;
+  S.password = pw;
+  saveData().then(() => { document.getElementById('s-pw').value = ''; showToast('Password updated across all devices'); });
+}
+
+function copyPubUrl() {
+  navigator.clipboard.writeText(location.origin + location.pathname + '?public');
+  showToast('Link copied!');
+}
+
+// ── NAV ────────────────────────────────────────────────────
 function showView(name) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-  const el = document.getElementById('view-' + name);
-  if (el) el.classList.add('active');
-  const nb = document.getElementById('nav-' + name);
-  if (nb) nb.classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  const v = document.getElementById('view-' + name);
+  const n = document.getElementById('nav-' + name);
+  if (v) v.classList.add('active');
+  if (n) n.classList.add('active');
+  document.getElementById('scroll-content').scrollTop = 0;
   if (name === 'calendar') renderCalendar();
   if (name === 'earnings') renderEarnings();
-  if (name === 'settings') {
-    const s = getSettings();
-    document.getElementById('gist-id-input').value = s.gistId || '';
-    document.getElementById('gist-token-input').value = s.token || '';
-    document.getElementById('biz-name-input').value = s.bizName || 'Pawkeeper';
-    document.getElementById('public-url').textContent = location.origin + location.pathname + '?public';
-  }
+  if (name === 'settings') { updateSyncText(); document.getElementById('pub-url').textContent = location.origin + location.pathname + '?public'; }
 }
 
-// ============================================================
-// HELPERS
-// ============================================================
+// ── HELPERS ────────────────────────────────────────────────
 function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
+function nights(s,e) { return Math.max(0, Math.round((new Date(e)-new Date(s))/86400000)); }
+function fmtDate(d) { if(!d) return '—'; const [y,m,day]=d.split('-'); return `${day}/${m}/${y}`; }
+function fmtMoney(n) { return '£'+Number(n).toFixed(2); }
+function dogEmoji(b) { if(!b)return'🐶'; const l=b.toLowerCase(); if(l.includes('retriever')||l.includes('labrador'))return'🦮'; if(l.includes('poodle'))return'🐩'; return'🐕'; }
+function statusOf(b) { const now=new Date().toISOString().slice(0,10); if(b.end<now)return'past'; if(b.start<=now)return'active'; return'upcoming'; }
+function getDog(id) { return S.dogs.find(d=>d.id===id); }
+function getClient(id) { return S.clients.find(c=>c.id===id); }
 
-function nights(start, end) {
-  const ms = new Date(end) - new Date(start);
-  return Math.max(0, Math.round(ms / 86400000));
-}
+// ── RENDER ALL ─────────────────────────────────────────────
+function renderAll() { renderStats(); renderUpcoming(); renderAllBookings(); renderClients(); renderDogs(); renderCalendar(); }
 
-function fmtDate(d) {
-  if (!d) return '—';
-  const [y, m, day] = d.split('-');
-  return `${day}/${m}/${y}`;
-}
-
-function fmtCurrency(n) { return '£' + Number(n).toFixed(2); }
-
-function dogEmoji(breed) {
-  if (!breed) return '🐶';
-  const b = breed.toLowerCase();
-  if (b.includes('retriever') || b.includes('labrador')) return '🦮';
-  if (b.includes('poodle')) return '🐩';
-  return '🐕';
-}
-
-function statusOf(b) {
-  const now = new Date().toISOString().slice(0,10);
-  if (b.end < now) return 'past';
-  if (b.start <= now && b.end >= now) return 'active';
-  return 'upcoming';
-}
-
-function getDog(id) { return state.dogs.find(d => d.id === id); }
-function getClient(id) { return state.clients.find(c => c.id === id); }
-
-// ============================================================
-// RENDER ALL
-// ============================================================
-function renderAll() {
-  renderStats();
-  renderUpcoming();
-  renderAllBookings();
-  renderClients();
-  renderDogs();
-  renderCalendar();
-}
-
-// ============================================================
-// STATS
-// ============================================================
 function renderStats() {
   const now = new Date().toISOString().slice(0,10);
   const ym = now.slice(0,7);
-  const active = state.bookings.filter(b => b.start <= now && b.end >= now).length;
-  const upcoming = state.bookings.filter(b => b.start > now).length;
-  const monthEarn = state.bookings
-    .filter(b => b.start.startsWith(ym) || b.end.startsWith(ym))
-    .reduce((s,b) => s + (b.total || 0), 0);
-  document.getElementById('stat-active').textContent = active;
-  document.getElementById('stat-upcoming').textContent = upcoming;
-  document.getElementById('stat-month-earn').textContent = fmtCurrency(monthEarn);
-  document.getElementById('stat-clients').textContent = state.clients.length;
+  document.getElementById('stat-active').textContent = S.bookings.filter(b=>b.start<=now&&b.end>=now).length;
+  document.getElementById('stat-upcoming').textContent = S.bookings.filter(b=>b.start>now).length;
+  document.getElementById('stat-clients').textContent = S.clients.length;
+  const m = S.bookings.filter(b=>b.start.slice(0,7)===ym).reduce((s,b)=>s+(b.total||0),0);
+  document.getElementById('stat-month').textContent = fmtMoney(m);
 }
 
-// ============================================================
-// BOOKINGS
-// ============================================================
-function bookingCardHTML(b) {
-  const dog = getDog(b.dogId);
-  const client = getClient(b.clientId);
+// ── BOOKING CARDS ──────────────────────────────────────────
+function bookingHTML(b) {
+  const dog = getDog(b.dogId), client = getClient(b.clientId);
   const st = statusOf(b);
-  const pillClass = { past: 'status-past', active: 'status-active', upcoming: 'status-upcoming' }[st];
-  const pillLabel = { past: 'Past', active: 'Active', upcoming: 'Upcoming' }[st];
+  const pc = {past:'s-past',active:'s-active',upcoming:'s-upcoming'}[st];
+  const pl = {past:'Past',active:'Active ✓',upcoming:'Upcoming'}[st];
   const n = nights(b.start, b.end);
-  return `
-    <div class="booking-card" id="bc-${b.id}">
-      <div class="booking-dog-avatar">${dog ? dogEmoji(dog.breed) : '🐕'}</div>
-      <div class="booking-main">
-        <div class="booking-title">${dog ? dog.name : 'Unknown dog'} <span class="status-pill ${pillClass}">${pillLabel}</span></div>
-        <div class="booking-sub">
-          ${client ? client.firstName + ' ' + client.lastName : 'Unknown client'} &nbsp;·&nbsp;
-          ${fmtDate(b.start)} → ${fmtDate(b.end)}
-          ${b.notes ? '&nbsp;·&nbsp;<em style="color:var(--text-light)">' + b.notes.slice(0,40) + (b.notes.length>40?'…':'') + '</em>' : ''}
-        </div>
+  return `<div class="booking-card">
+    <div class="booking-top">
+      <div class="booking-avatar">${dog?dogEmoji(dog.breed):'🐕'}</div>
+      <div class="booking-info">
+        <div class="booking-name">${dog?dog.name:'Unknown'} <span class="status-pill ${pc}">${pl}</span></div>
+        <div class="booking-sub">${client?client.firstName+' '+client.lastName:'—'}</div>
+        <div class="booking-sub">${fmtDate(b.start)} → ${fmtDate(b.end)}</div>
+        ${b.notes?`<div class="booking-sub" style="font-style:italic">${b.notes.slice(0,60)}${b.notes.length>60?'…':''}</div>`:''}
       </div>
-      <div class="booking-meta">
-        <div class="booking-total">${fmtCurrency(b.total || 0)}</div>
-        <div class="booking-nights">${n} night${n!==1?'s':''} @ ${fmtCurrency(b.rate)}/night</div>
+    </div>
+    <div class="booking-bottom">
+      <div>
+        <div class="booking-total">${fmtMoney(b.total||0)}</div>
+        <div class="booking-nights">${n} night${n!==1?'s':''} @ ${fmtMoney(b.rate)}/night</div>
       </div>
       <div class="booking-actions">
-        <button class="btn btn-outline" onclick="openBookingModal('${b.id}')" style="font-size:13px">Edit</button>
-        <button class="btn btn-danger" onclick="deleteBooking('${b.id}')" style="font-size:13px">✕</button>
+        <button class="btn btn-outline btn-sm" onclick="openBookingModal('${b.id}')">Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="delBooking('${b.id}')">✕</button>
       </div>
-    </div>`;
+    </div>
+  </div>`;
 }
 
 function renderUpcoming() {
   const now = new Date().toISOString().slice(0,10);
-  const list = state.bookings.filter(b => b.end >= now).sort((a,b) => a.start.localeCompare(b.start));
-  const el = document.getElementById('upcoming-bookings-list');
-  if (!list.length) {
-    el.innerHTML = `<div class="empty-state"><div class="empty-icon">📋</div><p>No upcoming bookings yet</p><button class="btn btn-primary" onclick="openBookingModal()">Add first booking</button></div>`;
-  } else {
-    el.innerHTML = list.map(bookingCardHTML).join('');
-  }
+  const list = S.bookings.filter(b=>b.end>=now).sort((a,b)=>a.start.localeCompare(b.start));
+  document.getElementById('upcoming-list').innerHTML = list.length ? list.map(bookingHTML).join('') :
+    `<div class="empty-state"><div class="empty-icon">📋</div><p>No upcoming bookings</p><button class="btn btn-primary" onclick="openBookingModal()">Add first booking</button></div>`;
 }
 
 function renderAllBookings() {
-  const list = [...state.bookings].sort((a,b) => b.start.localeCompare(a.start));
-  const el = document.getElementById('all-bookings-list');
-  if (!list.length) {
-    el.innerHTML = `<div class="empty-state"><div class="empty-icon">📋</div><p>No bookings yet</p><button class="btn btn-primary" onclick="openBookingModal()">Add first booking</button></div>`;
-  } else {
-    el.innerHTML = list.map(bookingCardHTML).join('');
-  }
+  const list = [...S.bookings].sort((a,b)=>b.start.localeCompare(a.start));
+  document.getElementById('all-list').innerHTML = list.length ? list.map(bookingHTML).join('') :
+    `<div class="empty-state"><div class="empty-icon">📋</div><p>No bookings yet</p><button class="btn btn-primary" onclick="openBookingModal()">Add first booking</button></div>`;
 }
 
-// ============================================================
-// BOOKING MODAL
-// ============================================================
+// ── BOOKING MODAL ──────────────────────────────────────────
 function openBookingModal(id) {
-  editingId.booking = id || null;
-  const modal = document.getElementById('booking-modal');
-  const title = document.getElementById('booking-modal-title');
-
-  // Populate dogs and clients
-  const dogSel = document.getElementById('bk-dog');
-  const clientSel = document.getElementById('bk-client');
-  dogSel.innerHTML = '<option value="">— select dog —</option>' + state.dogs.map(d => `<option value="${d.id}">${d.name} (${d.breed||'mixed'})</option>`).join('');
-  clientSel.innerHTML = '<option value="">— select client —</option>' + state.clients.map(c => `<option value="${c.id}">${c.firstName} ${c.lastName}</option>`).join('');
-
+  editId.booking = id||null;
+  const ds = document.getElementById('bk-dog');
+  const cs = document.getElementById('bk-client');
+  ds.innerHTML = '<option value="">— select dog —</option>' + S.dogs.map(d=>`<option value="${d.id}">${d.name}${d.breed?' ('+d.breed+')':''}</option>`).join('');
+  cs.innerHTML = '<option value="">— select client —</option>' + S.clients.map(c=>`<option value="${c.id}">${c.firstName} ${c.lastName}</option>`).join('');
+  document.getElementById('bk-title').textContent = id ? 'Edit booking' : 'New booking';
   if (id) {
-    title.textContent = 'Edit booking';
-    const b = state.bookings.find(x => x.id === id);
-    if (b) {
-      dogSel.value = b.dogId;
-      clientSel.value = b.clientId;
-      document.getElementById('bk-start').value = b.start;
-      document.getElementById('bk-end').value = b.end;
-      document.getElementById('bk-rate').value = b.rate;
-      document.getElementById('bk-total').value = fmtCurrency(b.total);
-      document.getElementById('bk-notes').value = b.notes || '';
-    }
+    const b = S.bookings.find(x=>x.id===id);
+    if(b){ ds.value=b.dogId; cs.value=b.clientId; document.getElementById('bk-start').value=b.start; document.getElementById('bk-end').value=b.end; document.getElementById('bk-rate').value=b.rate; document.getElementById('bk-total').value=fmtMoney(b.total||0); document.getElementById('bk-notes').value=b.notes||''; }
   } else {
-    title.textContent = 'New booking';
-    document.getElementById('bk-start').value = '';
-    document.getElementById('bk-end').value = '';
-    document.getElementById('bk-rate').value = '';
-    document.getElementById('bk-total').value = '';
-    document.getElementById('bk-notes').value = '';
+    ['bk-start','bk-end','bk-rate','bk-total','bk-notes'].forEach(i=>document.getElementById(i).value='');
   }
-  modal.classList.add('open');
+  document.getElementById('booking-modal').classList.add('open');
 }
 
-// Auto-calc total
-['bk-start','bk-end','bk-rate'].forEach(id => {
-  document.getElementById(id)?.addEventListener('input', calcTotal);
+['bk-start','bk-end','bk-rate'].forEach(id=>{
+  document.getElementById(id).addEventListener('input',()=>{
+    const s=document.getElementById('bk-start').value, e=document.getElementById('bk-end').value, r=parseFloat(document.getElementById('bk-rate').value);
+    document.getElementById('bk-total').value = (s&&e&&r) ? fmtMoney(nights(s,e)*r) : '';
+  });
 });
 
-function calcTotal() {
-  const start = document.getElementById('bk-start').value;
-  const end = document.getElementById('bk-end').value;
-  const rate = parseFloat(document.getElementById('bk-rate').value);
-  if (start && end && rate) {
-    const n = nights(start, end);
-    document.getElementById('bk-total').value = fmtCurrency(n * rate);
-  } else {
-    document.getElementById('bk-total').value = '';
-  }
-}
-
 function saveBooking() {
-  const dogId = document.getElementById('bk-dog').value;
-  const clientId = document.getElementById('bk-client').value;
-  const start = document.getElementById('bk-start').value;
-  const end = document.getElementById('bk-end').value;
-  const rate = parseFloat(document.getElementById('bk-rate').value);
-  const notes = document.getElementById('bk-notes').value.trim();
-  if (!dogId || !clientId || !start || !end || !rate) { showToast('Please fill in all required fields'); return; }
-  const n = nights(start, end);
-  const total = n * rate;
-
-  if (editingId.booking) {
-    const idx = state.bookings.findIndex(b => b.id === editingId.booking);
-    if (idx !== -1) state.bookings[idx] = { ...state.bookings[idx], dogId, clientId, start, end, rate, total, notes };
-  } else {
-    state.bookings.push({ id: uid(), dogId, clientId, start, end, rate, total, notes });
-  }
-  closeModal('booking-modal');
-  saveData().then(renderAll);
-  showToast('Booking saved');
+  const dogId=document.getElementById('bk-dog').value, clientId=document.getElementById('bk-client').value;
+  const start=document.getElementById('bk-start').value, end=document.getElementById('bk-end').value;
+  const rate=parseFloat(document.getElementById('bk-rate').value);
+  const notes=document.getElementById('bk-notes').value.trim();
+  if(!dogId||!clientId||!start||!end||!rate){showToast('Please fill required fields');return;}
+  const total=nights(start,end)*rate;
+  if(editId.booking){const i=S.bookings.findIndex(b=>b.id===editId.booking);if(i!==-1)S.bookings[i]={...S.bookings[i],dogId,clientId,start,end,rate,total,notes};}
+  else{S.bookings.push({id:uid(),dogId,clientId,start,end,rate,total,notes});}
+  closeModal('booking-modal'); saveData().then(renderAll); showToast('Booking saved');
 }
 
-function deleteBooking(id) {
-  if (!confirm('Delete this booking?')) return;
-  state.bookings = state.bookings.filter(b => b.id !== id);
-  saveData().then(renderAll);
-  showToast('Booking deleted');
-}
+function delBooking(id){if(!confirm('Delete this booking?'))return;S.bookings=S.bookings.filter(b=>b.id!==id);saveData().then(renderAll);}
 
-// ============================================================
-// CLIENTS
-// ============================================================
+// ── CLIENTS ────────────────────────────────────────────────
 function renderClients() {
   const el = document.getElementById('clients-grid');
-  if (!state.clients.length) {
-    el.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">👥</div><p>No clients yet</p><button class="btn btn-primary" onclick="openClientModal()">Add first client</button></div>`;
-    return;
-  }
-  el.innerHTML = state.clients.map(c => {
-    const initials = (c.firstName[0] || '') + (c.lastName[0] || '');
-    const dogs = state.dogs.filter(d => d.ownerId === c.id);
-    return `
-      <div class="profile-card">
-        <div class="profile-avatar">${initials.toUpperCase()}</div>
-        <div class="profile-name">${c.firstName} ${c.lastName}</div>
-        <div class="profile-sub">${c.email || '—'} · ${c.phone || '—'}</div>
-        ${dogs.map(d => `<span class="profile-tag">🐕 ${d.name}</span>`).join('')}
-        ${c.notes ? `<div style="font-size:13px;color:var(--text-light);margin-top:0.5rem">${c.notes}</div>` : ''}
-        <div class="profile-actions">
-          <button class="btn btn-outline" style="font-size:13px" onclick="openClientModal('${c.id}')">Edit</button>
-          <button class="btn btn-danger" style="font-size:13px" onclick="deleteClient('${c.id}')">Delete</button>
-        </div>
-      </div>`;
-  }).join('');
-}
-
-function openClientModal(id) {
-  editingId.client = id || null;
-  document.getElementById('client-modal-title').textContent = id ? 'Edit client' : 'New client';
-  if (id) {
-    const c = state.clients.find(x => x.id === id);
-    if (c) {
-      document.getElementById('cl-first').value = c.firstName;
-      document.getElementById('cl-last').value = c.lastName;
-      document.getElementById('cl-email').value = c.email || '';
-      document.getElementById('cl-phone').value = c.phone || '';
-      document.getElementById('cl-notes').value = c.notes || '';
-    }
-  } else {
-    ['cl-first','cl-last','cl-email','cl-phone','cl-notes'].forEach(i => document.getElementById(i).value = '');
-  }
-  document.getElementById('client-modal').classList.add('open');
-}
-
-function saveClient() {
-  const firstName = document.getElementById('cl-first').value.trim();
-  const lastName = document.getElementById('cl-last').value.trim();
-  const email = document.getElementById('cl-email').value.trim();
-  const phone = document.getElementById('cl-phone').value.trim();
-  const notes = document.getElementById('cl-notes').value.trim();
-  if (!firstName || !lastName) { showToast('First and last name required'); return; }
-  if (editingId.client) {
-    const idx = state.clients.findIndex(c => c.id === editingId.client);
-    if (idx !== -1) state.clients[idx] = { ...state.clients[idx], firstName, lastName, email, phone, notes };
-  } else {
-    state.clients.push({ id: uid(), firstName, lastName, email, phone, notes });
-  }
-  closeModal('client-modal');
-  saveData().then(renderAll);
-  showToast('Client saved');
-}
-
-function deleteClient(id) {
-  if (!confirm('Delete this client?')) return;
-  state.clients = state.clients.filter(c => c.id !== id);
-  saveData().then(renderAll);
-}
-
-// ============================================================
-// DOGS
-// ============================================================
-function renderDogs() {
-  const el = document.getElementById('dogs-grid');
-  if (!state.dogs.length) {
-    el.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">🐶</div><p>No dogs yet</p><button class="btn btn-primary" onclick="openDogModal()">Add first dog</button></div>`;
-    return;
-  }
-  el.innerHTML = state.dogs.map(d => {
-    const owner = getClient(d.ownerId);
-    return `
-      <div class="profile-card">
-        <div class="profile-avatar" style="font-size:28px">${dogEmoji(d.breed)}</div>
-        <div class="profile-name">${d.name}</div>
-        <div class="profile-sub">${d.breed || 'Mixed breed'} · ${d.age ? d.age + ' yrs' : '—'}</div>
-        ${owner ? `<span class="profile-tag">👤 ${owner.firstName} ${owner.lastName}</span>` : ''}
-        ${d.notes ? `<div style="font-size:13px;color:var(--text-light);margin-top:0.5rem">${d.notes}</div>` : ''}
-        <div class="profile-actions">
-          <button class="btn btn-outline" style="font-size:13px" onclick="openDogModal('${d.id}')">Edit</button>
-          <button class="btn btn-danger" style="font-size:13px" onclick="deleteDog('${d.id}')">Delete</button>
-        </div>
-      </div>`;
-  }).join('');
-}
-
-function openDogModal(id) {
-  editingId.dog = id || null;
-  document.getElementById('dog-modal-title').textContent = id ? 'Edit dog' : 'Add dog';
-  const ownerSel = document.getElementById('dg-owner');
-  ownerSel.innerHTML = '<option value="">— select owner —</option>' + state.clients.map(c => `<option value="${c.id}">${c.firstName} ${c.lastName}</option>`).join('');
-  if (id) {
-    const d = state.dogs.find(x => x.id === id);
-    if (d) {
-      document.getElementById('dg-name').value = d.name;
-      document.getElementById('dg-breed').value = d.breed || '';
-      document.getElementById('dg-age').value = d.age || '';
-      document.getElementById('dg-notes').value = d.notes || '';
-      ownerSel.value = d.ownerId || '';
-    }
-  } else {
-    ['dg-name','dg-breed','dg-age','dg-notes'].forEach(i => document.getElementById(i).value = '');
-    ownerSel.value = '';
-  }
-  document.getElementById('dog-modal').classList.add('open');
-}
-
-function saveDog() {
-  const name = document.getElementById('dg-name').value.trim();
-  const breed = document.getElementById('dg-breed').value.trim();
-  const age = document.getElementById('dg-age').value;
-  const ownerId = document.getElementById('dg-owner').value;
-  const notes = document.getElementById('dg-notes').value.trim();
-  if (!name) { showToast("Dog's name is required"); return; }
-  if (editingId.dog) {
-    const idx = state.dogs.findIndex(d => d.id === editingId.dog);
-    if (idx !== -1) state.dogs[idx] = { ...state.dogs[idx], name, breed, age, ownerId, notes };
-  } else {
-    state.dogs.push({ id: uid(), name, breed, age, ownerId, notes });
-  }
-  closeModal('dog-modal');
-  saveData().then(renderAll);
-  showToast('Dog saved');
-}
-
-function deleteDog(id) {
-  if (!confirm('Delete this dog?')) return;
-  state.dogs = state.dogs.filter(d => d.id !== id);
-  saveData().then(renderAll);
-}
-
-// ============================================================
-// CALENDAR
-// ============================================================
-function renderCalendar() {
-  const label = document.getElementById('cal-month-label');
-  label.textContent = new Date(calYear, calMonth).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
-  const grid = document.getElementById('cal-grid');
-  grid.innerHTML = buildCalGrid(calYear, calMonth, true);
-  renderBlockedList();
-}
-
-function buildCalGrid(year, month, admin) {
-  const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-  let html = days.map(d => `<div class="cal-day-label">${d}</div>`).join('');
-  const first = new Date(year, month, 1);
-  let startDow = first.getDay(); // 0=Sun
-  startDow = startDow === 0 ? 6 : startDow - 1; // shift to Mon=0
-  const total = new Date(year, month + 1, 0).getDate();
-  const today = new Date().toISOString().slice(0,10);
-
-  // Build booked date set
-  const bookedDates = new Set();
-  state.bookings.forEach(b => {
-    let d = new Date(b.start);
-    const end = new Date(b.end);
-    while (d < end) {
-      bookedDates.add(d.toISOString().slice(0,10));
-      d.setDate(d.getDate() + 1);
-    }
-  });
-
-  // Blocked
-  const blockedDates = new Set();
-  state.blocked.forEach(bl => {
-    let d = new Date(bl.start);
-    const end = new Date(bl.end);
-    while (d <= end) {
-      blockedDates.add(d.toISOString().slice(0,10));
-      d.setDate(d.getDate() + 1);
-    }
-  });
-
-  // Prev month days
-  const prevTotal = new Date(year, month, 0).getDate();
-  for (let i = 0; i < startDow; i++) {
-    html += `<div class="cal-day other-month">${prevTotal - startDow + i + 1}</div>`;
-  }
-
-  for (let d = 1; d <= total; d++) {
-    const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    let cls = 'cal-day';
-    if (dateStr === today) cls += ' today';
-    if (bookedDates.has(dateStr)) cls += ' booked';
-    else if (blockedDates.has(dateStr)) cls += ' blocked';
-    html += `<div class="${cls}">${d}</div>`;
-  }
-
-  // Fill remaining
-  const used = startDow + total;
-  const remaining = (7 - (used % 7)) % 7;
-  for (let i = 1; i <= remaining; i++) {
-    html += `<div class="cal-day other-month">${i}</div>`;
-  }
-  return html;
-}
-
-function prevMonth() { calMonth--; if (calMonth < 0) { calMonth = 11; calYear--; } renderCalendar(); }
-function nextMonth() { calMonth++; if (calMonth > 11) { calMonth = 0; calYear++; } renderCalendar(); }
-
-// ============================================================
-// BLOCKED DATES
-// ============================================================
-function renderBlockedList() {
-  const el = document.getElementById('blocked-list');
-  if (!state.blocked.length) {
-    el.innerHTML = '<p style="color:var(--text-light);font-size:14px">No blocked dates.</p>';
-    return;
-  }
-  el.innerHTML = state.blocked.map(b => `
-    <div class="blocked-row">
-      <span>${fmtDate(b.start)} → ${fmtDate(b.end)} ${b.reason ? '· <em>' + b.reason + '</em>' : ''}</span>
-      <button class="btn btn-danger" style="font-size:12px;padding:4px 10px" onclick="deleteBlock('${b.id}')">Remove</button>
-    </div>`).join('');
-}
-
-function openBlockModal() {
-  document.getElementById('bl-start').value = '';
-  document.getElementById('bl-end').value = '';
-  document.getElementById('bl-reason').value = '';
-  document.getElementById('block-modal').classList.add('open');
-}
-
-function saveBlock() {
-  const start = document.getElementById('bl-start').value;
-  const end = document.getElementById('bl-end').value;
-  const reason = document.getElementById('bl-reason').value.trim();
-  if (!start || !end) { showToast('Please select start and end dates'); return; }
-  state.blocked.push({ id: uid(), start, end, reason });
-  closeModal('block-modal');
-  saveData().then(() => { renderCalendar(); });
-  showToast('Dates blocked');
-}
-
-function deleteBlock(id) {
-  state.blocked = state.blocked.filter(b => b.id !== id);
-  saveData().then(() => { renderCalendar(); });
-}
-
-// ============================================================
-// EARNINGS
-// ============================================================
-function renderEarnings() {
-  const now = new Date();
-  const thisYear = now.getFullYear();
-  const thisMonth = now.toISOString().slice(0,7);
-
-  const byMonth = {};
-  state.bookings.forEach(b => {
-    const ym = b.start.slice(0,7);
-    if (!byMonth[ym]) byMonth[ym] = { total: 0, count: 0 };
-    byMonth[ym].total += (b.total || 0);
-    byMonth[ym].count++;
-  });
-
-  const yearTotal = Object.entries(byMonth).filter(([k]) => k.startsWith(thisYear)).reduce((s,[,v]) => s+v.total, 0);
-  const monthTotal = (byMonth[thisMonth] || {}).total || 0;
-  const allTotal = Object.values(byMonth).reduce((s,v) => s+v.total, 0);
-
-  document.getElementById('earn-year').textContent = fmtCurrency(yearTotal);
-  document.getElementById('earn-month').textContent = fmtCurrency(monthTotal);
-  document.getElementById('earn-total').textContent = fmtCurrency(allTotal);
-
-  const sortedMonths = Object.keys(byMonth).sort().reverse();
-  const el = document.getElementById('earnings-breakdown');
-  if (!sortedMonths.length) {
-    el.innerHTML = '<p style="color:var(--text-light)">No earnings yet.</p>';
-    return;
-  }
-  el.innerHTML = sortedMonths.map(ym => {
-    const [y, m] = ym.split('-');
-    const name = new Date(y, m-1).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
-    const { total, count } = byMonth[ym];
-    return `<div class="earnings-month">
-      <div>
-        <div class="earnings-month-name">${name}</div>
-        <div class="earnings-month-count">${count} booking${count!==1?'s':''}</div>
-      </div>
-      <div class="earnings-month-total">${fmtCurrency(total)}</div>
+  if(!S.clients.length){el.innerHTML=`<div class="empty-state"><div class="empty-icon">👥</div><p>No clients yet</p><button class="btn btn-primary" onclick="openClientModal()">Add first client</button></div>`;return;}
+  el.innerHTML = S.clients.map(c=>{
+    const dogs=S.dogs.filter(d=>d.ownerId===c.id);
+    return `<div class="profile-card">
+      <div class="profile-top"><div class="profile-avatar">${(c.firstName[0]||'')+(c.lastName[0]||'')}</div><div><div class="profile-name">${c.firstName} ${c.lastName}</div><div class="profile-sub">${c.email||''}</div><div class="profile-sub">${c.phone||''}</div></div></div>
+      ${dogs.map(d=>`<span class="profile-tag">${dogEmoji(d.breed)} ${d.name}</span>`).join('')}
+      ${c.notes?`<div class="profile-note">${c.notes}</div>`:''}
+      <div class="profile-actions"><button class="btn btn-outline btn-sm" onclick="openClientModal('${c.id}')">Edit</button><button class="btn btn-danger btn-sm" onclick="delClient('${c.id}')">Delete</button></div>
     </div>`;
   }).join('');
 }
 
-// ============================================================
-// PUBLIC VIEW
-// ============================================================
-function showPublicView() {
-  document.getElementById('auth-screen').style.display = 'none';
-  document.getElementById('public-view').style.display = 'block';
-  loadData().then(() => {
-    const s = getSettings();
-    document.getElementById('public-biz-name').textContent = (s.bizName || 'Pawkeeper') + ' — check our availability below';
-    const now = new Date();
-    pubYear = now.getFullYear();
-    pubMonth = now.getMonth();
-    renderPubCalendar();
-  });
+function openClientModal(id){
+  editId.client=id||null;
+  document.getElementById('cl-title').textContent=id?'Edit client':'New client';
+  if(id){const c=S.clients.find(x=>x.id===id);if(c){document.getElementById('cl-first').value=c.firstName;document.getElementById('cl-last').value=c.lastName;document.getElementById('cl-email').value=c.email||'';document.getElementById('cl-phone').value=c.phone||'';document.getElementById('cl-notes').value=c.notes||'';}}
+  else{['cl-first','cl-last','cl-email','cl-phone','cl-notes'].forEach(i=>document.getElementById(i).value='');}
+  document.getElementById('client-modal').classList.add('open');
 }
 
-function renderPubCalendar() {
-  document.getElementById('pub-cal-month').textContent = new Date(pubYear, pubMonth).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
-  document.getElementById('pub-cal-grid').innerHTML = buildCalGrid(pubYear, pubMonth, false);
+function saveClient(){
+  const fn=document.getElementById('cl-first').value.trim(),ln=document.getElementById('cl-last').value.trim();
+  if(!fn||!ln){showToast('Name required');return;}
+  const obj={firstName:fn,lastName:ln,email:document.getElementById('cl-email').value.trim(),phone:document.getElementById('cl-phone').value.trim(),notes:document.getElementById('cl-notes').value.trim()};
+  if(editId.client){const i=S.clients.findIndex(c=>c.id===editId.client);if(i!==-1)S.clients[i]={...S.clients[i],...obj};}
+  else{S.clients.push({id:uid(),...obj});}
+  closeModal('client-modal');saveData().then(renderAll);showToast('Client saved');
+}
+function delClient(id){if(!confirm('Delete client?'))return;S.clients=S.clients.filter(c=>c.id!==id);saveData().then(renderAll);}
+
+// ── DOGS ───────────────────────────────────────────────────
+function renderDogs(){
+  const el=document.getElementById('dogs-grid');
+  if(!S.dogs.length){el.innerHTML=`<div class="empty-state"><div class="empty-icon">🐶</div><p>No dogs yet</p><button class="btn btn-primary" onclick="openDogModal()">Add first dog</button></div>`;return;}
+  el.innerHTML=S.dogs.map(d=>{
+    const o=getClient(d.ownerId);
+    return`<div class="profile-card">
+      <div class="profile-top"><div class="profile-avatar" style="font-size:26px">${dogEmoji(d.breed)}</div><div><div class="profile-name">${d.name}</div><div class="profile-sub">${d.breed||'Mixed breed'}${d.age?' · '+d.age+' yrs':''}</div></div></div>
+      ${o?`<span class="profile-tag">👤 ${o.firstName} ${o.lastName}</span>`:''}
+      ${d.notes?`<div class="profile-note">${d.notes}</div>`:''}
+      <div class="profile-actions"><button class="btn btn-outline btn-sm" onclick="openDogModal('${d.id}')">Edit</button><button class="btn btn-danger btn-sm" onclick="delDog('${d.id}')">Delete</button></div>
+    </div>`;
+  }).join('');
 }
 
-function pubPrevMonth() { pubMonth--; if (pubMonth < 0) { pubMonth = 11; pubYear--; } renderPubCalendar(); }
-function pubNextMonth() { pubMonth++; if (pubMonth > 11) { pubMonth = 0; pubYear++; } renderPubCalendar(); }
-
-// ============================================================
-// MODAL HELPERS
-// ============================================================
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-
-document.querySelectorAll('.modal-overlay').forEach(m => {
-  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
-});
-
-// ============================================================
-// TOAST
-// ============================================================
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2500);
+function openDogModal(id){
+  editId.dog=id||null;
+  document.getElementById('dg-title').textContent=id?'Edit dog':'Add dog';
+  const os=document.getElementById('dg-owner');
+  os.innerHTML='<option value="">— select owner —</option>'+S.clients.map(c=>`<option value="${c.id}">${c.firstName} ${c.lastName}</option>`).join('');
+  if(id){const d=S.dogs.find(x=>x.id===id);if(d){document.getElementById('dg-name').value=d.name;document.getElementById('dg-breed').value=d.breed||'';document.getElementById('dg-age').value=d.age||'';document.getElementById('dg-notes').value=d.notes||'';os.value=d.ownerId||'';}}
+  else{['dg-name','dg-breed','dg-age','dg-notes'].forEach(i=>document.getElementById(i).value='');os.value='';}
+  document.getElementById('dog-modal').classList.add('open');
 }
+
+function saveDog(){
+  const name=document.getElementById('dg-name').value.trim();
+  if(!name){showToast("Dog's name required");return;}
+  const obj={name,breed:document.getElementById('dg-breed').value.trim(),age:document.getElementById('dg-age').value,ownerId:document.getElementById('dg-owner').value,notes:document.getElementById('dg-notes').value.trim()};
+  if(editId.dog){const i=S.dogs.findIndex(d=>d.id===editId.dog);if(i!==-1)S.dogs[i]={...S.dogs[i],...obj};}
+  else{S.dogs.push({id:uid(),...obj});}
+  closeModal('dog-modal');saveData().then(renderAll);showToast('Dog saved');
+}
+function delDog(id){if(!confirm('Delete dog?'))return;S.dogs=S.dogs.filter(d=>d.id!==id);saveData().then(renderAll);}
+
+// ── CALENDAR ───────────────────────────────────────────────
+function buildGrid(year,month){
+  const DOW=['M','T','W','T','F','S','S'];
+  let html=DOW.map(d=>`<div class="cal-dlbl">${d}</div>`).join('');
+  let startDow=new Date(year,month,1).getDay(); startDow=startDow===0?6:startDow-1;
+  const total=new Date(year,month+1,0).getDate();
+  const prevTotal=new Date(year,month,0).getDate();
+  const today=new Date().toISOString().slice(0,10);
+  const booked=new Set(), blocked=new Set();
+  S.bookings.forEach(b=>{let d=new Date(b.start),e=new Date(b.end);while(d<e){booked.add(d.toISOString().slice(0,10));d.setDate(d.getDate()+1);}});
+  S.blocked.forEach(b=>{let d=new Date(b.start),e=new Date(b.end);while(d<=e){blocked.add(d.toISOString().slice(0,10));d.setDate(d.getDate()+1);}});
+  for(let i=0;i<startDow;i++) html+=`<div class="cal-day other">${prevTotal-startDow+i+1}</div>`;
+  for(let d=1;d<=total;d++){
+    const ds=`${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    let cls='cal-day';
+    if(ds===today)cls+=' today';
+    if(booked.has(ds))cls+=' booked';
+    else if(blocked.has(ds))cls+=' blocked';
+    html+=`<div class="${cls}">${d}</div>`;
+  }
+  const used=startDow+total,rem=(7-used%7)%7;
+  for(let i=1;i<=rem;i++) html+=`<div class="cal-day other">${i}</div>`;
+  return html;
+}
+
+function renderCalendar(){
+  document.getElementById('cal-lbl').textContent=new Date(calY,calM).toLocaleDateString('en-GB',{month:'long',year:'numeric'});
+  document.getElementById('cal-grid').innerHTML=buildGrid(calY,calM);
+  const el=document.getElementById('blocked-list');
+  if(!S.blocked.length){el.innerHTML='<p style="font-size:14px;color:var(--text-light)">No blocked dates.</p>';return;}
+  el.innerHTML=S.blocked.map(b=>`<div class="blocked-row"><span>${fmtDate(b.start)} → ${fmtDate(b.end)}${b.reason?' · <em>'+b.reason+'</em>':''}</span><button class="btn btn-danger btn-sm" onclick="delBlock('${b.id}')">Remove</button></div>`).join('');
+}
+
+function prevMonth(){calM--;if(calM<0){calM=11;calY--;}renderCalendar();}
+function nextMonth(){calM++;if(calM>11){calM=0;calY++;}renderCalendar();}
+
+function openBlockModal(){['bl-start','bl-end','bl-reason'].forEach(i=>document.getElementById(i).value='');document.getElementById('block-modal').classList.add('open');}
+function saveBlock(){
+  const s=document.getElementById('bl-start').value,e=document.getElementById('bl-end').value;
+  if(!s||!e){showToast('Select start and end dates');return;}
+  S.blocked.push({id:uid(),start:s,end:e,reason:document.getElementById('bl-reason').value.trim()});
+  closeModal('block-modal');saveData().then(()=>renderCalendar());showToast('Dates blocked');
+}
+function delBlock(id){S.blocked=S.blocked.filter(b=>b.id!==id);saveData().then(()=>renderCalendar());}
+
+// ── EARNINGS ───────────────────────────────────────────────
+function renderEarnings(){
+  const now=new Date(),ty=now.getFullYear(),tm=now.toISOString().slice(0,7);
+  const bm={};
+  S.bookings.forEach(b=>{const ym=b.start.slice(0,7);if(!bm[ym])bm[ym]={t:0,c:0};bm[ym].t+=(b.total||0);bm[ym].c++;});
+  const yearT=Object.entries(bm).filter(([k])=>k.startsWith(ty)).reduce((s,[,v])=>s+v.t,0);
+  document.getElementById('e-year').textContent=fmtMoney(yearT);
+  document.getElementById('e-month').textContent=fmtMoney((bm[tm]||{}).t||0);
+  document.getElementById('e-total').textContent=fmtMoney(Object.values(bm).reduce((s,v)=>s+v.t,0));
+  const sorted=Object.keys(bm).sort().reverse();
+  document.getElementById('earnings-list').innerHTML=sorted.length?sorted.map(ym=>{
+    const[y,m]=ym.split('-');
+    const name=new Date(y,m-1).toLocaleDateString('en-GB',{month:'long',year:'numeric'});
+    return`<div class="earn-row"><div><div class="earn-name">${name}</div><div class="earn-count">${bm[ym].c} booking${bm[ym].c!==1?'s':''}</div></div><div class="earn-total">${fmtMoney(bm[ym].t)}</div></div>`;
+  }).join(''):'<p style="color:var(--text-light)">No earnings yet.</p>';
+}
+
+// ── PUBLIC VIEW ────────────────────────────────────────────
+function showPublicView(){
+  document.getElementById('auth-screen').style.display='none';
+  document.getElementById('public-view').style.display='block';
+  document.getElementById('pub-title').textContent=S.bizName||'Pawkeeper';
+  const now=new Date();pubY=now.getFullYear();pubM=now.getMonth();renderPubCal();
+}
+function renderPubCal(){
+  document.getElementById('pub-cal-lbl').textContent=new Date(pubY,pubM).toLocaleDateString('en-GB',{month:'long',year:'numeric'});
+  document.getElementById('pub-cal-grid').innerHTML=buildGrid(pubY,pubM);
+}
+function pubPrev(){pubM--;if(pubM<0){pubM=11;pubY--;}renderPubCal();}
+function pubNext(){pubM++;if(pubM>11){pubM=0;pubY++;}renderPubCal();}
+
+// ── MODALS ─────────────────────────────────────────────────
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.modal-overlay').forEach(m=>{m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open');});});
+
+// ── TOAST ──────────────────────────────────────────────────
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
 </script>
 </body>
 </html>
